@@ -1,11 +1,41 @@
 import { Component } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-registro',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './registro.html',
   styleUrl: './registro.scss'
 })
 export class Registro {
+   formRegistro = new FormGroup({
+    nombre: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6)
+    ]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8)
+    ])
+  });
 
+  get nombre() {
+    return this.formRegistro.get('nombre')!;
+  }
+
+  get email() {
+    return this.formRegistro.get('email')!;
+  }
+
+  get password() {
+    return this.formRegistro.get('password')!;
+  }
+
+  enviarRegistro() {
+    console.log(this.formRegistro.value);
+  }
 }
