@@ -21,7 +21,7 @@ export class Login {
   iniciarSesion(){
     let credenciales : CredentialsInterface = {
       email: this.formLogin.value.email!,
-      password: this.formLogin.value.password!,
+      contrasena: this.formLogin.value.password!,
     }
     this.loginService.authenticate(credenciales).subscribe(
       (value)=>{

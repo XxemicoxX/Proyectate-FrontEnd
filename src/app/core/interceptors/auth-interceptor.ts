@@ -4,6 +4,11 @@ import { inject } from '@angular/core';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  
+  // No agregar token a las rutas de autenticación
+  if (req.url.includes('/authenticate')) {
+    return next(req);
+  }
   const token = authService.token;
 
   if(token){
@@ -12,6 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
     return next(cloneReq);
   }
+  
   return next(req);
 
 };

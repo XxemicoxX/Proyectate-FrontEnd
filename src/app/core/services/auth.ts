@@ -8,8 +8,9 @@ import { environment } from '../../../environments/environment.development';
   providedIn: 'root',
 })
 export class AuthService {
-  URL = `${environment.apiURL}/auth/authenticate`;
+  URL = `${environment.apiURL}/authenticate`;
   http = inject(HttpClient);
+
 
   // Variable temporal, luege se debe borrar
   public token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc2Mjg4Mjk0MSwiZXhwIjoxNzYzNDg3NzQxfQ.Pg3pAccukhdCVFy4gi8v6NzvntIzSYTptq9_Kr2w-2xpMhmgSPLsIYKrmeUmn0dSS17Ltfs3tgyRtqxK_072jA";
@@ -21,6 +22,7 @@ export class AuthService {
   authenticate(credenciales : CredentialsInterface) {
     return this.http.post<any>(this.URL,credenciales);
   }
+  
 
   private hasToken(): boolean {
     return true;
