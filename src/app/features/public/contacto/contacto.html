@@ -1,1 +1,26 @@
-<p>contacto works!</p>
+<h2>Contactanos</h2>
+<form #formContacto="ngForm" (ngSubmit)="enviarConsulta()">
+  <label for="nombre">Nombre:</label>
+  <input type="text" id="nombre" [(ngModel)]="model.nombre" name="nombre" required #nombre="ngModel" minlength="6">
+  <div class="error" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+    <div *ngIf="nombre.hasError('required')">❌ Nombre es requerido</div>
+    <div *ngIf="nombre.hasError('minlength')">❌ Nombre debe tener 6 caracteres como mínimo</div>
+  </div>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" [(ngModel)]="model.email" name="email" required #email="ngModel"
+         pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
+  <div class="error" *ngIf="email.invalid && (email.dirty || email.touched)">
+    <div *ngIf="email.hasError('required')">❌ Correo es requerido</div>
+    <div *ngIf="email.hasError('pattern')">❌ Formato de correo inválido</div>
+  </div>
+
+  <label for="mensaje">Mensaje:</label>
+  <textarea id="mensaje" [(ngModel)]="model.mensaje" name="mensaje" maxlength="10" required rows="6" #mensaje="ngModel"></textarea>
+  <div class="error" *ngIf="mensaje.invalid && (mensaje.dirty || mensaje.touched)">
+    <div *ngIf="mensaje.hasError('required')">❌ Mensaje es requerido</div>
+    <div *ngIf="mensaje.hasError('maxlength')">❌ Mensaje debe tener 10 caracteres como máximo</div>
+  </div>
+
+  <button type="submit" [disabled]="formContacto.form.invalid">Enviar</button>
+</form>
