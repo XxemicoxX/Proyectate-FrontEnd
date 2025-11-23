@@ -1,0 +1,130 @@
+*{
+    text-align: center;
+}
+
+p{
+    font-size: 1.2rem;
+}
+
+a{
+    color: #007bff;
+}
+
+$bg: #f7f8fb;
+$text: #0f1720;
+$muted: #6b7280;
+$accent: #0077ff;
+$accent-700: #005ecc;
+$radius: 12px;
+$max-width: 960px;
+$gap: 1rem;
+
+:host, :root {
+  box-sizing: border-box;
+  font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+  background-color: $bg;
+  color: $text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Reset */
+*,
+*::before,
+*::after { box-sizing: inherit; }
+
+/* Page layout */
+.not-found {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+  color: $text;
+}
+
+.card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: $radius;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+  max-width: $max-width;
+  width: 100%;
+  display: grid;
+  gap: $gap;
+  align-items: center;
+}
+
+/* Visual 404 code */
+.code {
+  font-weight: 800;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1;
+  color: $accent;
+  margin: 0;
+  letter-spacing: -0.04em;
+}
+
+/* Titles and description */
+h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+p {
+  margin: 0;
+  color: $muted;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: .5rem;
+}
+
+a.button {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1rem;
+  background: $accent;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,119,255,0.12);
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+a.button.secondary {
+  background: transparent;
+  border: 1px solid rgba(15,23,42,0.06);
+  color: $text;
+  box-shadow: none;
+}
+
+a.button:hover { transform: translateY(-2px); }
+a.button:focus {
+  outline: 3px solid rgba($accent, 0.15);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Small utilities */
+.meta {
+  font-size: .9rem;
+  color: $muted;
+}
+
+/* Responsive tweaks */
+@media (min-width: 640px) {
+  .card { padding: 2.25rem; }
+  .code { font-size: clamp(4rem, 10vw, 7rem); }
+}
