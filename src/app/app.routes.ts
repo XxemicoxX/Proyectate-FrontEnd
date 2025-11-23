@@ -15,6 +15,6 @@ export const routes: Routes = [
     { path: 'contacto', component: Contacto, title: 'Contacto | Proyectate' },
     { path: 'inicio-sesion', component: Login, title: 'Iniciar Sesión | Proyectate' },
     { path: 'registro', component: Registro, title: 'Registro | Proyectate' },
-    { path: 'proyecto', component: Proyecto, title: 'Mi Proyecto | Proyectate'},
+    { path: 'proyecto', component: Proyecto, title: 'Mi Proyecto | Proyectate', canActivate: [authGuard]},
     { path: '**', component: NoEncontrado, title: 'Página no encontrada' }
 ];

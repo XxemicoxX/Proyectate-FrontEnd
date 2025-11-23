@@ -13,7 +13,7 @@ export class AuthService {
 
 
   // Variable temporal, luege se debe borrar
-  public token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlhdCI6MTc2Mjg4Mjk0MSwiZXhwIjoxNzYzNDg3NzQxfQ.Pg3pAccukhdCVFy4gi8v6NzvntIzSYTptq9_Kr2w-2xpMhmgSPLsIYKrmeUmn0dSS17Ltfs3tgyRtqxK_072jA";
+  public token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsImlhdCI6MTc2Mzg2ODA2MiwiZXhwIjoxNzY0NDcyODYyfQ.eXnpgnDJf1F8FbwvJuB_AIBMZwspuK_FHIq2B3vbnvAaF3c6RKKILqoNHZ5DrO_cSIHDPoqouJVCwRVAvWzaAg";
 
   // Observable para conocer si está autenticado
   private isAuth = new BehaviorSubject<boolean>(this.hasToken());
