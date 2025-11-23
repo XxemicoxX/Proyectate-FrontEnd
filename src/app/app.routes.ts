@@ -9,19 +9,9 @@ import { Registro } from './features/auth/registro/registro';
 export const routes: Routes = [
 
     {path: '', component: Inicio, title: 'Inicio | Proyectate'},
-    {
-        path: 'nosotros', component: Nosotros, title: 'Nosotros | Proyectate'
-    },
-    {
-        path: 'contacto', component: Contacto, title: 'Contacto | Proyectate'
-    },
-    {
-        path: 'inicio-sesion', component: Login, title: 'Iniciar Sesión | Proyectate'
-    },
-    {
-        path: 'registro', component: Registro, title: 'Registro | Proyectate'
-    },
-    {
-        path: '**', component: NoEncontrado, title: 'Página no encontrada'
-    }
+    {path: 'nosotros', component: Nosotros, title: 'Nosotros | Proyectate'},
+    {path: 'contacto', component: Contacto, title: 'Contacto | Proyectate'},
+    {path: 'inicio-sesion', component: Login, title: 'Iniciar Sesión | Proyectate'},
+    {path: 'registro', component: Registro, title: 'Registro | Proyectate'},
+    {path: '**', component: NoEncontrado, title: 'Página no encontrada'}
 ];
