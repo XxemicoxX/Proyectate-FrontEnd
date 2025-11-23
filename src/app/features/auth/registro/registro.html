@@ -1,1 +1,40 @@
 <h2>Crea una nueva cuenta</h2>
+<form [formGroup]="formRegistro" (submit)="enviarRegistro()">
+    <label for="nombre">Nombre de usuario:</label>
+    <input type="text" id="nombre" formControlName="nombre" required>
+    @if (nombre.invalid && (nombre.dirty || nombre.touched)) {
+    <div class="error">
+        @if (nombre.hasError('required')) {
+        Nombre es requerido
+        }
+        @if (nombre.hasError('minlength')) {
+        Nombre debe tener como mínimo 6 caracteres.
+        }
+    </div>
+    }
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    @if (email.invalid && (email.dirty || email.touched)) {
+    <div class="error">
+        @if (email.hasError('required')) {
+        Correo es requerido
+        }
+        @if (email.hasError('email')) {
+        Correo en formato no válido.
+        }
+    </div>
+    }
+    <label for="password">Contraseña:</label>
+    <input type="password" id="password" name="password" required>
+    @if (password.invalid && (password.dirty || password.touched)) {
+    <div class="error">
+        @if (password.hasError('required')) {
+        Contraseña es requerida
+        }
+        @if (password.hasError('minlength')) {
+        Contraseña debe ser mayor a 8 caracteres.
+        }
+    </div>
+    }
+    <button type="submit" [disabled]="formRegistro.invalid">Enviar</button>
+</form>
