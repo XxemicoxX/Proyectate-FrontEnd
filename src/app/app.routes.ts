@@ -6,6 +6,7 @@ import { Contacto } from './features/public/contacto/contacto';
 import { Login } from './features/auth/login/login';
 import { Registro } from './features/auth/registro/registro';
 import { Proyecto } from './features/user/proyecto/proyecto';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
 

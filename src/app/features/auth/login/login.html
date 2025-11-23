@@ -1,2 +1,16 @@
+<h1>Inicio de sesión</h1>
+<form [formGroup]="formLogin" (submit)="iniciarSesion()">
+    <div>
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" formControlName="email">
+    </div>
+    <div>
+        <label for="clave">Contraseña</label>
+        <input type="text" id="clave" formControlName="password">
+    </div>
+    <button [disabled]="formLogin.invalid">
+        Iniciar
+    </button>
+</form>
 <p>¿No tienes una cuenta?</p>
 <a routerLink="/registro">Regístrate aquí</a>
