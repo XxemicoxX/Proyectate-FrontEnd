@@ -1,1 +1,17 @@
-<p>proyecto works!</p>
+<h2>Crea un proyecto</h2>
+<form [formGroup]="formProyecto" (ngSubmit)="enviarProyecto()">
+    <label for="nombre">Titulo del proyecto:</label>
+    <input type="text" id="nombre" formControlName="nombre" required>
+    <div class="error" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+        <div *ngIf="nombre.hasError('required')">Título es requerido</div>
+        <div *ngIf="nombre.hasError('minlength')">Título debe tener como mínimo 6 caracteres.</div>
+    </div>
+
+    <label for="descripcion">Descripción:</label>
+    <textarea id="descripcion" formControlName="descripcion" required></textarea>
+    <div class="error" *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)">
+        <div *ngIf="descripcion.hasError('required')">Descripción es requerida</div>
+        <div *ngIf="descripcion.hasError('maxlength')">Descripción debe tener como máximo 100 caracteres.</div>
+    </div>
+
+   <button type="submit" [disabled]="formProyecto.invalid">Crear Proyecto</button>
