@@ -7,6 +7,7 @@ import { Login } from './features/auth/login/login';
 import { Registro } from './features/auth/registro/registro';
 import { Proyecto } from './features/user/proyecto/proyecto';
 import { authGuard } from './core/guards/auth-guard';
+import { CrearProyecto } from './features/user/crear-proyecto/crear-proyecto';
 
 export const routes: Routes = [
 
@@ -15,6 +16,7 @@ export const routes: Routes = [
     { path: 'contacto', component: Contacto, title: 'Contacto | Proyectate' },
     { path: 'inicio-sesion', component: Login, title: 'Iniciar Sesión | Proyectate' },
     { path: 'registro', component: Registro, title: 'Registro | Proyectate' },
+    { path: 'crear-proyecto', component: CrearProyecto, title: 'Crear Proyecto | Proyectate' },
     { path: 'proyecto', component: Proyecto, title: 'Mi Proyecto | Proyectate', canActivate: [authGuard]},
     { path: '**', component: NoEncontrado, title: 'Página no encontrada' }
 ];

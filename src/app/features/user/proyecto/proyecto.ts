@@ -32,4 +32,6 @@ export class Proyecto {
   enviarProyecto() {
     console.log(this.formProyecto.value);
   }
+
+  
 }
