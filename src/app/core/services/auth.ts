@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root',
 })
 export class AuthService {
-  
+
   URL = `${environment.apiURL}/authenticate`;
   http = inject(HttpClient);
 
@@ -29,13 +29,26 @@ export class AuthService {
     }
   }
 
-  authenticate(credenciales : CredentialsInterface) {
+  authenticate(credenciales: CredentialsInterface) {
     return this.http.post<any>(this.URL, credenciales).pipe(
-    tap(resp => {
-      localStorage.setItem("token", resp.token);   // 🔥 guardar token
-    })
-  );
-  }  
+      tap(resp => {
+        console.log("🔥 RESPUESTA DEL LOGIN:", resp);
+
+        // 📌 Tu backend devuelve access_token (con guion bajo)
+        const accessToken = resp?.access_token;
+
+        if (!accessToken) {
+          console.error("❌ Error: backend no devolvió access_token");
+          return;
+        }
+
+        localStorage.setItem("token", accessToken);
+
+        this.token = accessToken;
+        this.isAuth.next(true);
+      })
+    );
+  }
 
   private hasToken(): boolean {
     return localStorage.getItem('token') !== null;
@@ -45,6 +58,6 @@ export class AuthService {
     if (!this.token) return null;
 
     const decoded: any = jwtDecode(this.token);
-    return decoded.id || decoded.userId || null;  
+    return decoded.id || decoded.userId || null;
   }
 }

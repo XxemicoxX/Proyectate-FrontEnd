@@ -75,7 +75,8 @@ export class CrearProyecto implements OnInit {
 
     const proyectoEnviar = {
       ...this.proyectoActual,
-      idUsuario: idUsuario   // << necesario para que backend acepte el request
+      //!!IMPORTANTE
+      id_usuario: idUsuario   // << necesario para que backend acepte el request
     };
 
     if (this.modoEdicion && this.proyectoActual.id) {

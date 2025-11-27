@@ -7,33 +7,30 @@ export class JwtService {
 
   // 🔥 Lee token desde localStorage
   getToken(): string | null {
-    return localStorage.getItem("token") ?? null;
+    return localStorage.getItem("token");
   }
 
   getPayload(): any {
-  const token = localStorage.getItem('token');
+    const token = this.getToken();
 
-  if (!token) {
-    console.warn("No hay token almacenado");
-    return null;
+    if (!token) {
+      console.warn("No hay token almacenado");
+      return null;
+    }
+
+    try {
+      const data: any = jwtDecode(token);
+      console.log("Payload decodificado:", data);
+      return data;
+    } catch (e) {
+      console.error("❌ Error decodificando token:", e);
+      return null;
+    }
   }
-
-  try {
-    const data: any = jwtDecode(token);  // 📌 Aquí decodificas el token correctamente
-    console.log("Payload decodificado:", data);
-
-    this.idUsuario = data.idUsuario ?? null;   // 🔥 Guarda idUsuario si existe
-    return data; // ⬅ EL PAYLOAD COMPLETO
-  } 
-  catch (e) {
-    console.error("❌ Error decodificando token:", e);
-    return null;
-  }
-}
 
   // 🔥 Extrae ID del usuario desde el token (claim SUB, ID o EMAIL)
   getUserId(): number | null {
     const payload = this.getPayload();
-    return payload?.id || payload?.userId || null;
+    return payload?.idUsuario ?? null; //Asi viene el tokken
   }
 }
