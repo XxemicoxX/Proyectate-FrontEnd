@@ -8,6 +8,10 @@ import { Registro } from './features/auth/registro/registro';
 import { Proyecto } from './features/user/proyecto/proyecto';
 import { authGuard } from './core/guards/auth-guard';
 import { CrearProyecto } from './features/user/crear-proyecto/crear-proyecto';
+import { ListaProyectos } from './features/user/lista-proyectos/lista-proyectos';
+import { GestionTareas } from './features/user/gestion-tareas/gestion-tareas';
+import { GestionUsuarios } from './features/user/gestion-usuarios/gestion-usuarios';
+import { FormProyecto } from './features/user/form-proyecto/form-proyecto';
 
 export const routes: Routes = [
 
@@ -17,6 +21,14 @@ export const routes: Routes = [
     { path: 'inicio-sesion', component: Login, title: 'Iniciar Sesión | Proyectate' },
     { path: 'registro', component: Registro, title: 'Registro | Proyectate' },
     { path: 'crear-proyecto', component: CrearProyecto, title: 'Crear Proyecto | Proyectate' },
-    { path: 'proyecto', component: Proyecto, title: 'Mi Proyecto | Proyectate', canActivate: [authGuard]},
+    { path: 'proyectos', children: [
+        {path: '', component: ListaProyectos},
+        {path: 'crear', component: FormProyecto},
+        {path: 'crear', component: FormProyecto},
+        {path: 'editar/:id', component: FormProyecto},
+        {path: ':id/tareas', component: GestionTareas},
+        {path: ':id/usuarios', component: GestionUsuarios}
+    ]},
+    { path: '', redirectTo: '/proyectos', pathMatch: 'full'},
     { path: '**', component: NoEncontrado, title: 'Página no encontrada' }
 ];

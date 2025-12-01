@@ -1,0 +1,90 @@
+<div class="usuarios-container">
+  <div class="usuarios-wrapper">
+    <!-- Header -->
+    <div class="usuarios-header">
+      <button class="btn-volver" (click)="volver()">
+        ← Volver a Proyectos
+      </button>
+      <h1>Gestión de Usuarios</h1>
+      <p class="proyecto-nombre" *ngIf="proyecto">{{ proyecto.nombre }}</p>
+    </div>
+
+    <!-- Botón agregar usuario -->
+    <div class="actions-bar" *ngIf="!mostrarFormulario">
+      <button class="btn-nuevo-usuario" (click)="mostrarFormAgregar()">
+        + Agregar Usuario
+      </button>
+    </div>
+
+    <!-- Formulario de agregar usuario -->
+    <div class="formulario-card" *ngIf="mostrarFormulario">
+      <div class="card-header">
+        <h2>Agregar Usuario al Proyecto</h2>
+        <button class="btn-cerrar" (click)="cancelarFormulario()">×</button>
+      </div>
+
+      <form (ngSubmit)="agregarUsuario()" #usuarioForm="ngForm">
+        <div class="form-group">
+          <label for="usuario">Usuario *</label>
+          <select 
+            id="usuario" 
+            [(ngModel)]="usuarioSeleccionado" 
+            name="usuario"
+            required>
+            <option value="0" disabled>Seleccionar usuario</option>
+            <option *ngFor="let usuario of usuariosDisponibles" [value]="usuario.id">
+              {{ usuario.nombre }} ({{ usuario.email }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="rol">Rol en el Proyecto</label>
+          <select id="rol" [(ngModel)]="rolSeleccionado" name="rol">
+            <option value="administrador">Administrador</option>
+            <option value="colaborador">Colaborador</option>
+            <option value="observador">Observador</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancelar" (click)="cancelarFormulario()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-guardar" [disabled]="!usuarioForm.valid || cargando">
+            {{ cargando ? 'Agregando...' : 'Agregar Usuario' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de usuarios -->
+    <div class="usuarios-grid" *ngIf="usuariosProyecto.length > 0">
+      <div class="usuario-card" *ngFor="let usuarioProyecto of usuariosProyecto">
+        <div class="usuario-info">
+          <div class="usuario-avatar">
+            {{ obtenerIniciales(obtenerNombreUsuario(usuarioProyecto.idUsuario)) }}
+          </div>
+          <div class="usuario-datos">
+            <h3>{{ obtenerNombreUsuario(usuarioProyecto.idUsuario) }}</h3>
+            <p class="email">{{ obtenerEmailUsuario(usuarioProyecto.idUsuario) }}</p>
+            <span class="badge badge-rol-{{ usuarioProyecto.rol }}">
+              {{ obtenerTextoRol(usuarioProyecto.rol) }}
+            </span>
+          </div>
+        </div>
+        <button class="btn-eliminar-card" (click)="eliminarUsuario(usuarioProyecto.id)">
+          Remover
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="usuariosProyecto.length === 0 && !mostrarFormulario">
+      <p>No hay usuarios asignados a este proyecto</p>
+      <button class="btn-agregar-primero" (click)="mostrarFormAgregar()">
+        Agregar primer usuario
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,472 @@
+.tareas-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+  padding: 2rem;
+
+  .tareas-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .tareas-header {
+      margin-bottom: 2.5rem;
+
+      .btn-volver {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #333;
+        color: #999;
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: #f3f3f3;
+          border-color: #444;
+          transform: translateX(-3px);
+        }
+      }
+
+      h1 {
+        color: #f3f3f3;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #f3f3f3 0%, #00bfff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .proyecto-nombre {
+        color: #999;
+        font-size: 1.1rem;
+        margin: 0;
+      }
+    }
+
+    .actions-bar {
+      margin-bottom: 2rem;
+
+      .btn-nueva-tarea {
+        background: linear-gradient(135deg, #00bfff 0%, #0099cc 100%);
+        color: #fff;
+        border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 191, 255, 0.2);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 191, 255, 0.4);
+        }
+      }
+    }
+
+    .formulario-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      animation: slideDown 0.3s ease;
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #222;
+
+        h2 {
+          color: #f3f3f3;
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin: 0;
+        }
+
+        .btn-cerrar {
+          background: rgba(255, 255, 255, 0.05);
+          border: none;
+          color: #999;
+          font-size: 1.8rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          line-height: 1;
+          padding: 0.3rem;
+          width: 36px;
+          height: 36px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            transform: rotate(90deg);
+          }
+        }
+      }
+
+      form {
+        display: grid;
+        gap: 1.5rem;
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+        }
+
+        .form-group {
+          label {
+            display: block;
+            color: #f3f3f3;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+          }
+
+          input,
+          textarea,
+          select {
+            width: 100%;
+            background: #0a0a0a;
+            border: 2px solid #222;
+            color: #f3f3f3;
+            padding: 0.9rem 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+
+            &:focus {
+              outline: none;
+              border-color: #00bfff;
+              background: #111;
+              box-shadow: 0 0 0 4px rgba(0, 191, 255, 0.1);
+            }
+
+            &::placeholder {
+              color: #555;
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            line-height: 1.6;
+          }
+
+          select {
+            cursor: pointer;
+          }
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          margin-top: 1rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #222;
+
+          button {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &.btn-cancelar {
+              background: rgba(255, 255, 255, 0.05);
+              color: #999;
+              border: 2px solid #333;
+
+              &:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #f3f3f3;
+                border-color: #444;
+              }
+            }
+
+            &.btn-guardar {
+              background: linear-gradient(135deg, #00bfff 0%, #0099cc 100%);
+              color: #fff;
+              box-shadow: 0 4px 15px rgba(0, 191, 255, 0.2);
+
+              &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 191, 255, 0.4);
+              }
+
+              &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .tareas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+
+      .tarea-card {
+        background: linear-gradient(135deg, #111 0%, #0f0f0f 100%);
+        border: 1px solid #222;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(0, 191, 255, 0.1);
+          border-color: #00bfff33;
+        }
+
+        .tarea-header {
+          padding: 1.5rem 1.5rem 1rem 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 1rem;
+
+          .tarea-info {
+            flex: 1;
+
+            h3 {
+              color: #f3f3f3;
+              font-size: 1.1rem;
+              font-weight: 700;
+              margin: 0 0 0.6rem 0;
+              line-height: 1.4;
+            }
+
+            .badge-etiqueta {
+              background: rgba(156, 39, 176, 0.2);
+              color: #ce93d8;
+              border: 1px solid rgba(156, 39, 176, 0.3);
+              padding: 0.3rem 0.7rem;
+              border-radius: 12px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.3px;
+            }
+          }
+
+          .btn-eliminar-card {
+            background: rgba(244, 67, 54, 0.1);
+            border: none;
+            color: #f44336;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            &:hover {
+              background: rgba(244, 67, 54, 0.2);
+              transform: scale(1.1);
+            }
+          }
+        }
+
+        .tarea-descripcion {
+          padding: 0 1.5rem 1rem 1.5rem;
+          color: #999;
+          font-size: 0.9rem;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        .tarea-badges {
+          padding: 0 1.5rem 1rem 1.5rem;
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+
+          .badge {
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+
+            &.badge-prioridad-baja {
+              background: rgba(76, 175, 80, 0.2);
+              color: #4caf50;
+              border: 1px solid rgba(76, 175, 80, 0.3);
+            }
+
+            &.badge-prioridad-media {
+              background: rgba(255, 193, 7, 0.2);
+              color: #ffc107;
+              border: 1px solid rgba(255, 193, 7, 0.3);
+            }
+
+            &.badge-prioridad-alta {
+              background: rgba(244, 67, 54, 0.2);
+              color: #f44336;
+              border: 1px solid rgba(244, 67, 54, 0.3);
+            }
+
+            &.badge-estado-pendiente {
+              background: rgba(158, 158, 158, 0.2);
+              color: #9e9e9e;
+              border: 1px solid rgba(158, 158, 158, 0.3);
+            }
+
+            &.badge-estado-en_progreso {
+              background: rgba(0, 191, 255, 0.2);
+              color: #00bfff;
+              border: 1px solid rgba(0, 191, 255, 0.3);
+            }
+
+            &.badge-estado-completada {
+              background: rgba(76, 175, 80, 0.2);
+              color: #4caf50;
+              border: 1px solid rgba(76, 175, 80, 0.3);
+            }
+          }
+        }
+
+        .tarea-actions {
+          display: flex;
+          border-top: 1px solid #222;
+
+          button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            color: #999;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:not(:last-child) {
+              border-right: 1px solid #222;
+            }
+
+            &.btn-editar:hover {
+              background: rgba(0, 191, 255, 0.08);
+              color: #00bfff;
+            }
+
+            &.btn-eliminar:hover {
+              background: rgba(244, 67, 54, 0.08);
+              color: #f44336;
+            }
+          }
+        }
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: #666;
+
+      &::before {
+        content: '📝';
+        font-size: 4rem;
+        display: block;
+        margin-bottom: 1.5rem;
+        opacity: 0.5;
+      }
+
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        color: #777;
+      }
+
+      .btn-crear-primera {
+        background: linear-gradient(135deg, #00bfff 0%, #0099cc 100%);
+        color: #fff;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 191, 255, 0.2);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 191, 255, 0.4);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .tareas-container {
+    padding: 1.5rem;
+
+    .tareas-wrapper {
+      .formulario-card {
+        padding: 1.5rem;
+
+        form {
+          .form-row {
+            grid-template-columns: 1fr;
+          }
+
+          .form-actions {
+            flex-direction: column-reverse;
+
+            button {
+              width: 100%;
+            }
+          }
+        }
+      }
+
+      .tareas-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

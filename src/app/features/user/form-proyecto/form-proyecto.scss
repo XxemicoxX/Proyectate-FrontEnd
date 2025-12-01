@@ -1,0 +1,217 @@
+.form-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .form-wrapper {
+    width: 100%;
+    max-width: 800px;
+
+    .form-header {
+      margin-bottom: 2rem;
+
+      .btn-volver {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #333;
+        color: #999;
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: #f3f3f3;
+          border-color: #444;
+          transform: translateX(-3px);
+        }
+      }
+
+      h1 {
+        color: #f3f3f3;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #f3f3f3 0%, #00bfff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .formulario-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      animation: slideUp 0.4s ease;
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      form {
+        display: grid;
+        gap: 2rem;
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+
+          @media (max-width: 640px) {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .form-group {
+          label {
+            display: block;
+            color: #f3f3f3;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+          }
+
+          input,
+          textarea,
+          select {
+            width: 100%;
+            background: #0a0a0a;
+            border: 2px solid #222;
+            color: #f3f3f3;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+
+            &:focus {
+              outline: none;
+              border-color: #00bfff;
+              background: #111;
+              box-shadow: 0 0 0 4px rgba(0, 191, 255, 0.1);
+            }
+
+            &::placeholder {
+              color: #555;
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            min-height: 150px;
+            line-height: 1.6;
+          }
+
+          select {
+            cursor: pointer;
+          }
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          margin-top: 1rem;
+          padding-top: 2rem;
+          border-top: 1px solid #222;
+
+          @media (max-width: 640px) {
+            flex-direction: column-reverse;
+          }
+
+          button {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            @media (max-width: 640px) {
+              width: 100%;
+            }
+
+            &.btn-cancelar {
+              background: rgba(255, 255, 255, 0.05);
+              color: #999;
+              border: 2px solid #333;
+
+              &:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #f3f3f3;
+                border-color: #444;
+              }
+            }
+
+            &.btn-guardar {
+              background: linear-gradient(135deg, #00bfff 0%, #0099cc 100%);
+              color: #fff;
+              box-shadow: 0 4px 15px rgba(0, 191, 255, 0.2);
+
+              &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 191, 255, 0.4);
+              }
+
+              &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+              }
+
+              &:active:not(:disabled) {
+                transform: translateY(0);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1.5rem;
+
+    .form-wrapper .formulario-card {
+      padding: 1.8rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 1rem;
+
+    .form-wrapper .formulario-card {
+      padding: 1.5rem;
+
+      form .form-group {
+        input, textarea, select {
+          padding: 0.9rem 1rem;
+        }
+      }
+    }
+  }
+}

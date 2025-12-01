@@ -44,7 +44,7 @@ export class CrearProyecto implements OnInit {
       fechaInicio: '',
       estado: 'planificacion'
     };
-  } 
+  }
 
   cargarProyectos(): void {
     this.http.get<Proyecto[]>(this.apiProyectosUrl).subscribe({
@@ -106,12 +106,13 @@ export class CrearProyecto implements OnInit {
 
   eliminarProyecto(id: number | undefined): void {
     if (!id) return;
-  if (confirm('¿Estás seguro de eliminar este proyecto?')) {
-    this.http.delete(`${this.apiProyectosUrl}/${id}`).subscribe({
-      next: () => {
-        // ✨ Actualización inmediata
-        this.proyectos = this.proyectos.filter(p => p.id !== id);
-      },
+    if (confirm('¿Estás seguro de eliminar este proyecto?')) {
+      this.http.delete(`${this.apiProyectosUrl}/${id}`).subscribe({
+        next: () => {
+          //Actualización inmediata
+          this.proyectos = this.proyectos.filter(p => p.id !== id);
+          console.log('Proyecto eliminado, lista actualizada');
+        },
         error: (error) => console.error('Error al eliminar:', error)
       });
     }

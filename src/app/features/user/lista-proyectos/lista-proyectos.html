@@ -1,0 +1,75 @@
+<div class="proyecto-container" (click)="cerrarMenus()">
+  <div class="proyecto-header">
+    <h1>Mis Proyectos</h1>
+    <button class="btn-nuevo" (click)="navegarACrear()">
+      + Nuevo Proyecto
+    </button>
+  </div>
+
+  <!-- Lista de proyectos -->
+  <div class="proyectos-grid" *ngIf="proyectos.length > 0">
+    <div class="proyecto-card" *ngFor="let proyecto of proyectos" (click)="verDetalles(proyecto)">
+      <div class="card-content">
+        <div class="card-top">
+          <h3>{{ proyecto.nombre }}</h3>
+          <div class="card-top-actions">
+            <span class="badge badge-{{ proyecto.estado }}">
+              {{ obtenerTextoEstado(proyecto.estado) }}
+            </span>
+            <button 
+              class="btn-menu" 
+              (click)="toggleMenu(proyecto.id, $event)"
+              [class.active]="proyectoMenuAbierto === proyecto.id">
+              ⋮
+            </button>
+            
+            <!-- Menú desplegable -->
+            <div class="menu-opciones" *ngIf="proyectoMenuAbierto === proyecto.id" (click)="$event.stopPropagation()">
+              <button (click)="navegarATareas(proyecto, $event)">
+                <span class="icon">📋</span>
+                Gestionar Tareas
+              </button>
+              <button (click)="navegarAUsuarios(proyecto, $event)">
+                <span class="icon">👥</span>
+                Gestionar Usuarios
+              </button>
+              <button (click)="editarProyecto(proyecto); $event.stopPropagation()">
+                <span class="icon">✏️</span>
+                Editar Proyecto
+              </button>
+              <button class="menu-eliminar" (click)="eliminarProyecto(proyecto.id, $event)">
+                <span class="icon">🗑️</span>
+                Eliminar Proyecto
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <p class="descripcion">{{ proyecto.descripcion }}</p>
+        
+        <div class="card-info">
+          <span class="fecha" *ngIf="proyecto.fechaInicio">
+            📅 {{ proyecto.fechaInicio | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        <button class="btn-editar" (click)="editarProyecto(proyecto); $event.stopPropagation()">
+          Editar
+        </button>
+        <button class="btn-eliminar" (click)="eliminarProyecto(proyecto.id, $event)">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay proyectos -->
+  <div class="empty-state" *ngIf="proyectos.length === 0">
+    <p>No hay proyectos creados</p>
+    <button class="btn-crear-primero" (click)="navegarACrear()">
+      Crear mi primer proyecto
+    </button>
+  </div>
+</div>
