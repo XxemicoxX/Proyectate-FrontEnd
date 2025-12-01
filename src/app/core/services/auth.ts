@@ -32,9 +32,9 @@ export class AuthService {
   authenticate(credenciales: CredentialsInterface) {
     return this.http.post<any>(this.URL, credenciales).pipe(
       tap(resp => {
-        console.log("🔥 RESPUESTA DEL LOGIN:", resp);
+        console.log("RESPUESTA DEL LOGIN:", resp);
 
-        // 📌 Tu backend devuelve access_token (con guion bajo)
+        //El backend devuelve access_token (con guion bajo)
         const accessToken = resp?.access_token;
 
         if (!accessToken) {

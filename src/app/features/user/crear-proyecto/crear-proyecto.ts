@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { JwtService } from '../../../core/services/jwt';
+import { FormsModule } from '@angular/forms';
 
 interface Proyecto {
   id?: number;
@@ -80,7 +80,7 @@ export class CrearProyecto implements OnInit {
     };
 
     if (this.modoEdicion && this.proyectoActual.id) {
-      this.http.put<Proyecto>(this.apiProyectosUrl, proyectoEnviar).subscribe({
+      this.http.put<Proyecto>(`${this.apiProyectosUrl}/{id}`, proyectoEnviar).subscribe({
         next: () => {
           this.cargarProyectos();
           this.cancelarFormulario();
@@ -106,10 +106,12 @@ export class CrearProyecto implements OnInit {
 
   eliminarProyecto(id: number | undefined): void {
     if (!id) return;
-
-    if (confirm('¿Estás seguro de eliminar este proyecto?')) {
-      this.http.delete(`${this.apiProyectosUrl}/${id}`).subscribe({
-        next: () => this.cargarProyectos(),
+  if (confirm('¿Estás seguro de eliminar este proyecto?')) {
+    this.http.delete(`${this.apiProyectosUrl}/${id}`).subscribe({
+      next: () => {
+        // ✨ Actualización inmediata
+        this.proyectos = this.proyectos.filter(p => p.id !== id);
+      },
         error: (error) => console.error('Error al eliminar:', error)
       });
     }

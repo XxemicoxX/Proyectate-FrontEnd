@@ -3,9 +3,8 @@ import { jwtDecode } from 'jwt-decode';
 
 @Injectable({ providedIn: 'root' })
 export class JwtService {
-  idUsuario: number | null = null; //  <-- 🔥 NECESARIO
+  idUsuario: number | null = null;
 
-  // 🔥 Lee token desde localStorage
   getToken(): string | null {
     return localStorage.getItem("token");
   }
@@ -28,7 +27,7 @@ export class JwtService {
     }
   }
 
-  // 🔥 Extrae ID del usuario desde el token (claim SUB, ID o EMAIL)
+  // Extrae ID del usuario desde el token (claim SUB, ID o EMAIL)
   getUserId(): number | null {
     const payload = this.getPayload();
     return payload?.idUsuario ?? null; //Asi viene el tokken
