@@ -1,0 +1,149 @@
+<div class="detalle-container" *ngIf="!cargando">
+  <div class="detalle-wrapper">
+    <!-- Header -->
+    <div class="tarea-header">
+      <button class="btn-volver" (click)="volver()">
+        ← Volver a Tareas
+      </button>
+
+      <div class="header-content" *ngIf="tarea">
+        <div class="header-info">
+          <h1>{{ tarea.titulo }}</h1>
+          <p class="descripcion" *ngIf="tarea.descripcion">{{ tarea.descripcion }}</p>
+          <div class="metadata">
+            <span class="badge badge-prioridad-{{ tarea.prioridad }}">
+              {{ obtenerTextoPrioridad(tarea.prioridad) }}
+            </span>
+            <span class="badge badge-estado-{{ tarea.estado }}">
+              {{ obtenerTextoEstado(tarea.estado) }}
+            </span>
+            <span class="badge badge-etiqueta" *ngIf="etiqueta">
+              🏷️ {{ etiqueta.nombre }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de la tarea -->
+    <div class="info-grid" *ngIf="tarea">
+      <div class="info-card">
+        <div class="info-icon">📊</div>
+        <div class="info-content">
+          <h3>Estado</h3>
+          <p>{{ obtenerTextoEstado(tarea.estado) }}</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">⚡</div>
+        <div class="info-content">
+          <h3>Prioridad</h3>
+          <p>{{ obtenerTextoPrioridad(tarea.prioridad) }}</p>
+        </div>
+      </div>
+
+      <div class="info-card" *ngIf="etiqueta">
+        <div class="info-icon">🏷️</div>
+        <div class="info-content">
+          <h3>Etiqueta</h3>
+          <p>{{ etiqueta.nombre }}</p>
+        </div>
+      </div>
+
+      <div class="info-card" *ngIf="usuarioAsignado">
+        <div class="info-icon">👤</div>
+        <div class="info-content">
+          <h3>Asignado a</h3>
+          <p>{{ usuarioAsignado.nombre }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de Comentarios -->
+    <div class="seccion-comentarios">
+      <div class="seccion-header">
+        <h2>💬 Comentarios ({{ comentarios.length }})</h2>
+      </div>
+
+      <!-- Formulario para agregar comentario -->
+      <div class="comentario-form">
+        <div class="form-header">
+          <div class="usuario-avatar">
+            {{ obtenerIniciales('Usuario Actual') }}
+          </div>
+          <h4>Agregar comentario</h4>
+        </div>
+        <textarea
+          [(ngModel)]="nuevoComentario"
+          placeholder="Escribe tu comentario aquí..."
+          rows="4"
+          [disabled]="enviandoComentario"
+        ></textarea>
+        <div class="form-actions">
+          <button
+            class="btn-cancelar"
+            (click)="nuevoComentario = ''"
+            [disabled]="!nuevoComentario.trim() || enviandoComentario"
+          >
+            Cancelar
+          </button>
+          <button
+            class="btn-enviar"
+            (click)="agregarComentario()"
+            [disabled]="!nuevoComentario.trim() || enviandoComentario"
+          >
+            {{ enviandoComentario ? 'Enviando...' : 'Comentar' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de comentarios -->
+      <div class="comentarios-lista" *ngIf="comentarios.length > 0">
+        <div class="comentario-item" *ngFor="let comentario of comentarios">
+          <div class="comentario-header">
+            <div class="usuario-info">
+              <div class="usuario-avatar">
+                {{ obtenerIniciales(comentario.usuario?.nombre || 'Usuario') }}
+              </div>
+              <div class="usuario-datos">
+                <h4>{{ comentario.usuario?.nombre || 'Usuario' }}</h4>
+                <p class="fecha">{{ comentario.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}</p>
+              </div>
+            </div>
+            <button
+              class="btn-eliminar-comentario"
+              *ngIf="esComentarioPropio(comentario.usuario_id)"
+              (click)="eliminarComentario(comentario.id!)"
+            >
+              🗑️
+            </button>   
+          </div>
+          <div class="comentario-contenido">
+            <p>{{ comentario.contenido }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state comentarios -->
+      <div class="empty-state" *ngIf="comentarios.length === 0">
+        <div class="empty-icon">💬</div>
+        <p>No hay comentarios aún</p>
+        <p class="empty-subtitle">Sé el primero en comentar esta tarea</p>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="acciones-principales">
+      <button class="btn-accion btn-volver-footer" (click)="volver()">
+        ← Volver a Tareas
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading state -->
+<div class="loading-container" *ngIf="cargando">
+  <div class="loading-spinner"></div>
+  <p>Cargando tarea...</p>
+</div>
