@@ -10,17 +10,19 @@ interface Usuario {
   email: string;
 }
 
-interface UsuarioProyecto {
-  id?: number;
-  idUsuario: number;
-  idProyecto: number;
-  rol: string;
-}
-
 interface Proyecto {
   id?: number;
   nombre: string;
   descripcion: string;
+}
+
+interface UsuarioProyectoDetalle {
+  id?: number;
+  id_usuario: number;
+  id_proyecto: number;
+  rol: string;
+  nombre_usuario: string;
+  email_usuario: string;
 }
 
 @Component({
@@ -32,25 +34,25 @@ interface Proyecto {
 export class GestionUsuarios implements OnInit {
   proyecto: Proyecto | null = null;
   proyectoId: number = 0;
-  
+
   usuariosDisponibles: Usuario[] = [];
-  usuariosProyecto: UsuarioProyecto[] = [];
-  
+  usuariosProyecto: UsuarioProyectoDetalle[] = [];
+
   usuarioSeleccionado: number = 0;
   rolSeleccionado: string = 'colaborador';
-  
+
   mostrarFormulario = false;
   cargando = false;
 
   private apiProyectosUrl = 'http://localhost:8080/api/v1/proyectos';
   private apiUsuariosUrl = 'http://localhost:8080/api/v1/usuarios';
-  private apiUsuariosProyectoUrl = 'http://localhost:8080/api/v1/usuarios-proyecto';
+  private apiUsuariosProyectoUrl = 'http://localhost:8080/api/v1/usuarios-proyectos';
 
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -80,9 +82,17 @@ export class GestionUsuarios implements OnInit {
   }
 
   cargarUsuariosProyecto(): void {
-    this.http.get<UsuarioProyecto[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}`).subscribe({
-      next: (data) => this.usuariosProyecto = data ?? [],
-      error: () => this.usuariosProyecto = []
+    this.http.get<UsuarioProyectoDetalle[]>(
+      `${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}/detalles`
+    ).subscribe({
+      next: (data) => {
+        console.log('Usuarios del proyecto con detalles:', data); // DEBUG
+        this.usuariosProyecto = data ?? [];
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios proyecto:', err);
+        this.usuariosProyecto = [];
+      }
     });
   }
 
@@ -106,7 +116,7 @@ export class GestionUsuarios implements OnInit {
       rol: this.rolSeleccionado
     };
 
-    this.http.post<UsuarioProyecto>(`${this.apiUsuariosProyectoUrl}/agregar`, usuarioProyecto).subscribe({
+    this.http.post(`${this.apiUsuariosProyectoUrl}/crear`, usuarioProyecto).subscribe({
       next: () => {
         this.cargarUsuariosProyecto();
         this.cancelarFormulario();
@@ -142,8 +152,8 @@ export class GestionUsuarios implements OnInit {
     return this.usuariosDisponibles.find(u => u.id === idUsuario);
   }
 
-  obtenerNombreUsuario(idUsuario: number): string {
-    return this.obtenerUsuario(idUsuario)?.nombre || 'Usuario';
+  obtenerNombreUsuario(usuario: UsuarioProyectoDetalle): string {
+    return usuario.nombre_usuario || 'Usuario';
   }
 
   obtenerEmailUsuario(idUsuario: number): string {

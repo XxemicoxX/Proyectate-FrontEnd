@@ -26,11 +26,7 @@
       <form (ngSubmit)="agregarUsuario()" #usuarioForm="ngForm">
         <div class="form-group">
           <label for="usuario">Usuario *</label>
-          <select 
-            id="usuario" 
-            [(ngModel)]="usuarioSeleccionado" 
-            name="usuario"
-            required>
+          <select id="usuario" [(ngModel)]="usuarioSeleccionado" name="usuario" required>
             <option value="0" disabled>Seleccionar usuario</option>
             <option *ngFor="let usuario of usuariosDisponibles" [value]="usuario.id">
               {{ usuario.nombre }} ({{ usuario.email }})
@@ -63,11 +59,11 @@
       <div class="usuario-card" *ngFor="let usuarioProyecto of usuariosProyecto">
         <div class="usuario-info">
           <div class="usuario-avatar">
-            {{ obtenerIniciales(obtenerNombreUsuario(usuarioProyecto.idUsuario)) }}
+            {{ obtenerIniciales(usuarioProyecto.nombre_usuario) }}
           </div>
           <div class="usuario-datos">
-            <h3>{{ obtenerNombreUsuario(usuarioProyecto.idUsuario) }}</h3>
-            <p class="email">{{ obtenerEmailUsuario(usuarioProyecto.idUsuario) }}</p>
+            <h3>{{ usuarioProyecto.nombre_usuario }}</h3>
+            <p class="email">{{ usuarioProyecto.email_usuario }}</p>
             <span class="badge badge-rol-{{ usuarioProyecto.rol }}">
               {{ obtenerTextoRol(usuarioProyecto.rol) }}
             </span>

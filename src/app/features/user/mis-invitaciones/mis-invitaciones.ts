@@ -38,27 +38,29 @@ export class MisInvitaciones implements OnInit {
   }
 
   responder(id: number, aceptar: boolean): void {
-    const mensaje = aceptar ? '¿Unirte a este proyecto?' : '¿Rechazar esta invitación?';
-    
-    if (confirm(mensaje)) {
-      this.invitacionService.responderInvitacion(id, aceptar).subscribe({
-        next: () => {
-          const mensajeExito = aceptar ? '¡Te uniste al proyecto exitosamente!' : 'Invitación rechazada';
-          alert(mensajeExito);
-          this.cargarInvitaciones();
-          
-          if (aceptar) {
-            // Opcional: redirigir al proyecto
-            // this.router.navigate(['/proyectos']);
-          }
-        },
-        error: (err) => {
-          alert('Error al responder invitación');
-          console.error(err);
+  const mensaje = aceptar ? '¿Unirte a este proyecto?' : '¿Rechazar esta invitación?';
+  
+  if (confirm(mensaje)) {
+    this.invitacionService.responderInvitacion(id, aceptar).subscribe({
+      next: () => {
+        const mensajeExito = aceptar ? '¡Te uniste al proyecto exitosamente!' : 'Invitación rechazada';
+        alert(mensajeExito);
+        this.cargarInvitaciones();
+        
+        // Emitir evento para actualizar el header
+        window.dispatchEvent(new Event('invitacionRespondida'));
+        
+        if (aceptar) {
+          this.router.navigate(['/proyectos']);
         }
-      });
-    }
+      },
+      error: (err) => {
+        alert('Error al responder invitación');
+        console.error(err);
+      }
+    });
   }
+}
 
   verProyecto(proyectoId: number): void {
     this.router.navigate(['/proyectos', proyectoId]);

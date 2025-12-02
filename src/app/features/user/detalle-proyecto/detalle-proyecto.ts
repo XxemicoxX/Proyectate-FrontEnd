@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 interface Proyecto {
   id?: number;
@@ -23,24 +24,21 @@ interface Usuario {
   email: string;
 }
 
-interface Tarea {
+interface TareaDetalle {
   id?: number;
-  idProyecto?: number;
-  idEtiqueta: number;
   titulo: string;
   descripcion: string;
   prioridad: string;
   estado: string;
-  etiqueta?: Etiqueta;
-  usuarioAsignado?: Usuario;
+  id_proyecto: number;
+  id_etiqueta?: number | null;
+  id_usuario?: number | null;
+  nombreEtiqueta?: string;
+  nombreUsuario?: string;
 }
 
-interface UsuarioProyecto {
-  id?: number;
-  idUsuario: number;
-  idProyecto: number;
+interface UsuarioConRol extends Usuario {
   rol: string;
-  usuario?: Usuario;
 }
 
 @Component({
@@ -53,8 +51,8 @@ export class DetalleProyecto implements OnInit {
   proyecto: Proyecto | null = null;
   proyectoId: number = 0;
   
-  tareas: Tarea[] = [];
-  usuariosProyecto: UsuarioProyecto[] = [];
+  tareas: TareaDetalle[] = [];
+  usuariosProyecto: UsuarioConRol[] = [];
   etiquetas: Etiqueta[] = [];
   
   cargando = true;
@@ -64,7 +62,6 @@ export class DetalleProyecto implements OnInit {
   private apiTareasUrl = 'http://localhost:8080/api/v1/tareas';
   private apiUsuariosProyectoUrl = 'http://localhost:8080/api/v1/usuarios-proyectos';
   private apiEtiquetasUrl = 'http://localhost:8080/api/v1/etiquetas';
-  private apiUsuariosUrl = 'http://localhost:8080/api/v1/usuarios';
 
   constructor(
     private http: HttpClient,
@@ -83,65 +80,67 @@ export class DetalleProyecto implements OnInit {
   cargarDatos(): void {
     this.cargando = true;
     
-    // Cargar proyecto
-    this.http.get<Proyecto>(`${this.apiProyectosUrl}/${this.proyectoId}`).subscribe({
+    // Cargar todos los datos en paralelo
+    forkJoin({
+      proyecto: this.http.get<Proyecto>(`${this.apiProyectosUrl}/${this.proyectoId}`),
+      etiquetas: this.http.get<Etiqueta[]>(this.apiEtiquetasUrl),
+      usuarios: this.http.get<any[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}/detalles`),
+      tareas: this.http.get<any[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`)
+    }).subscribe({
       next: (data) => {
-        this.proyecto = data;
-        this.cargarTareas();
-        this.cargarUsuarios();
-        this.cargarEtiquetas();
+        // Proyecto
+        this.proyecto = data.proyecto;
+        console.log('Proyecto cargado:', this.proyecto);
+
+        // Etiquetas
+        this.etiquetas = data.etiquetas ?? [];
+        console.log('Etiquetas cargadas:', this.etiquetas);
+
+        // Usuarios con rol
+        this.usuariosProyecto = (data.usuarios ?? []).map(up => ({
+          id: up.id_usuario,
+          nombre: up.nombre_usuario,
+          email: up.email_usuario,
+          rol: up.rol
+        }));
+        console.log('Usuarios del proyecto:', this.usuariosProyecto);
+
+        // Tareas enriquecidas con nombres
+        this.tareas = (data.tareas ?? []).map(tarea => ({
+          id: tarea.id,
+          titulo: tarea.titulo,
+          descripcion: tarea.descripcion,
+          prioridad: tarea.prioridad,
+          estado: tarea.estado,
+          id_proyecto: tarea.id_proyecto,
+          id_etiqueta: tarea.id_etiqueta,
+          id_usuario: tarea.id_usuario,
+          nombreEtiqueta: this.obtenerNombreEtiqueta(tarea.id_etiqueta),
+          nombreUsuario: this.obtenerNombreUsuario(tarea.id_usuario)
+        }));
+        console.log('Tareas procesadas:', this.tareas);
+
+        this.cargando = false;
       },
       error: (err) => {
-        console.error('Error al cargar proyecto:', err);
+        console.error('Error al cargar datos del proyecto:', err);
+        this.cargando = false;
+        alert('Error al cargar el proyecto');
         this.volver();
       }
     });
   }
 
-  cargarTareas(): void {
-    this.http.get<Tarea[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`).subscribe({
-      next: (data) => {
-        this.tareas = data ?? [];
-        this.cargando = false;
-      },
-      error: () => {
-        this.tareas = [];
-        this.cargando = false;
-      }
-    });
+  obtenerNombreEtiqueta(idEtiqueta: number | null | undefined): string {
+    if (!idEtiqueta) return 'Sin etiqueta';
+    const etiqueta = this.etiquetas.find(e => e.id === idEtiqueta);
+    return etiqueta?.nombre || 'Sin etiqueta';
   }
 
-  cargarUsuarios(): void {
-    this.http.get<UsuarioProyecto[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}`).subscribe({
-      next: (data) => {
-        this.usuariosProyecto = data ?? [];
-        // Cargar datos completos de usuarios
-        this.cargarDatosUsuarios();
-      },
-      error: () => this.usuariosProyecto = []
-    });
-  }
-
-  cargarDatosUsuarios(): void {
-    this.http.get<Usuario[]>(this.apiUsuariosUrl).subscribe({
-      next: (usuarios) => {
-        this.usuariosProyecto.forEach(up => {
-          up.usuario = usuarios.find(u => u.id === up.idUsuario);
-        });
-      },
-      error: (err) => console.error('Error al cargar usuarios:', err)
-    });
-  }
-
-  cargarEtiquetas(): void {
-    this.http.get<Etiqueta[]>(this.apiEtiquetasUrl).subscribe({
-      next: (data) => this.etiquetas = data ?? [],
-      error: () => this.etiquetas = []
-    });
-  }
-
-  obtenerNombreEtiqueta(idEtiqueta: number): string {
-    return this.etiquetas.find(e => e.id === idEtiqueta)?.nombre || 'Sin etiqueta';
+  obtenerNombreUsuario(idUsuario: number | null | undefined): string {
+    if (!idUsuario) return 'Sin asignar';
+    const usuario = this.usuariosProyecto.find(u => u.id === idUsuario);
+    return usuario?.nombre || 'Sin asignar';
   }
 
   obtenerTextoEstado(estado: string): string {
@@ -182,9 +181,9 @@ export class DetalleProyecto implements OnInit {
   }
 
   obtenerIniciales(nombre: string): string {
-  if (!nombre || nombre.trim() === '') return 'U';
-  return nombre.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
-}
+    if (!nombre || nombre.trim() === '') return 'U';
+    return nombre.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
+  }
 
   toggleMenu(): void {
     this.menuAbierto = !this.menuAbierto;
@@ -195,13 +194,16 @@ export class DetalleProyecto implements OnInit {
   }
 
   editarProyecto(): void {
+    this.cerrarMenu();
     this.router.navigate(['/proyectos/editar', this.proyectoId]);
   }
 
   eliminarProyecto(): void {
+    this.cerrarMenu();
     if (confirm('¿Estás seguro de eliminar este proyecto? Se eliminarán todas las tareas y asignaciones.')) {
       this.http.delete(`${this.apiProyectosUrl}/${this.proyectoId}`).subscribe({
         next: () => {
+          alert('Proyecto eliminado exitosamente');
           this.volver();
         },
         error: (error) => {
@@ -248,5 +250,9 @@ export class DetalleProyecto implements OnInit {
   get porcentajeCompletado(): number {
     if (this.totalTareas === 0) return 0;
     return Math.round((this.tareasCompletadas / this.totalTareas) * 100);
+  }
+
+  get totalUsuarios(): number {
+    return this.usuariosProyecto.length;
   }
 }

@@ -5,7 +5,6 @@ import { Nosotros } from './features/public/nosotros/nosotros';
 import { Contacto } from './features/public/contacto/contacto';
 import { Login } from './features/auth/login/login';
 import { Registro } from './features/auth/registro/registro';
-import { Proyecto } from './features/user/proyecto/proyecto';
 import { authGuard } from './core/guards/auth-guard';
 import { CrearProyecto } from './features/user/crear-proyecto/crear-proyecto';
 import { ListaProyectos } from './features/user/lista-proyectos/lista-proyectos';

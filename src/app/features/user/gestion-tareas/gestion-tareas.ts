@@ -3,27 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-interface Etiqueta {
-  id: number;
-  nombre: string;
-}
-
-interface Tarea {
-  id?: number;
-  idProyecto?: number;
-  idEtiqueta: number;
-  idUsuario?: number;
-  titulo: string;
-  descripcion: string;
-  prioridad: string;
-  estado: string;
-}
+import { forkJoin } from 'rxjs';
 
 interface Proyecto {
   id?: number;
   nombre: string;
   descripcion: string;
+}
+
+interface Etiqueta {
+  id: number;
+  nombre: string;
 }
 
 interface Usuario {
@@ -32,11 +22,20 @@ interface Usuario {
   email: string;
 }
 
-interface UsuarioProyecto {
+interface Tarea {
   id?: number;
-  idUsuario: number;
+  titulo: string;
+  descripcion: string;
+  prioridad: string;
+  estado: string;
   idProyecto: number;
-  rol: string;
+  idEtiqueta?: number | null;
+  idUsuario?: number | null;
+}
+
+interface TareaDetalle extends Tarea {
+  nombreEtiqueta?: string;
+  nombreUsuario?: string;
 }
 
 @Component({
@@ -48,48 +47,89 @@ interface UsuarioProyecto {
 export class GestionTareas implements OnInit {
   proyecto: Proyecto | null = null;
   proyectoId: number = 0;
-
+  
+  tareas: TareaDetalle[] = [];
   etiquetas: Etiqueta[] = [];
-  tareas: Tarea[] = [];
-  usuariosProyecto: Usuario[] = [];
-
-  nuevaTarea: Tarea = this.nuevaTareaVacia();
+  usuarios: Usuario[] = [];
+  
+  // Formulario
+  tareaForm: Tarea = {
+    titulo: '',
+    descripcion: '',
+    prioridad: 'media',
+    estado: 'pendiente',
+    idProyecto: 0,
+    idEtiqueta: null,
+    idUsuario: null
+  };
+  
+  tareaEditandoId: number | null = null;
   mostrarFormulario = false;
-  modoEdicion = false;
   cargando = false;
 
   private apiProyectosUrl = 'http://localhost:8080/api/v1/proyectos';
-  private apiEtiquetasUrl = 'http://localhost:8080/api/v1/etiquetas';
   private apiTareasUrl = 'http://localhost:8080/api/v1/tareas';
+  private apiEtiquetasUrl = 'http://localhost:8080/api/v1/etiquetas';
   private apiUsuariosUrl = 'http://localhost:8080/api/v1/usuarios';
-  private apiUsuariosProyectoUrl = 'http://localhost:8080/api/v1/usuarios-proyecto';
 
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.proyectoId = +id;
+      this.tareaForm.idProyecto = this.proyectoId;
       this.cargarProyecto();
-      this.cargarEtiquetas();
-      this.cargarUsuariosProyecto();
-      this.cargarTareas();
+      this.cargarDatosIniciales();
     }
   }
 
-  nuevaTareaVacia(): Tarea {
-    return {
-      idEtiqueta: 0,
-      idUsuario: 0,
-      titulo: '',
-      descripcion: '',
-      prioridad: 'media',
-      estado: 'pendiente'
-    };
+  cargarDatosIniciales(): void {
+    // Cargar etiquetas, usuarios y tareas en paralelo
+    forkJoin({
+      etiquetas: this.http.get<Etiqueta[]>(this.apiEtiquetasUrl),
+      usuarios: this.http.get<any[]>(`http://localhost:8080/api/v1/usuarios-proyectos/proyecto/${this.proyectoId}/detalles`),
+      tareas: this.http.get<any[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`)
+    }).subscribe({
+      next: (data) => {
+        // Procesar etiquetas
+        this.etiquetas = data.etiquetas ?? [];
+        console.log('Etiquetas cargadas:', this.etiquetas);
+
+        // Procesar usuarios
+        this.usuarios = (data.usuarios ?? []).map(up => ({
+          id: up.id_usuario,
+          nombre: up.nombre_usuario,
+          email: up.email_usuario
+        }));
+        console.log('Usuarios del proyecto cargados:', this.usuarios);
+
+        // Procesar tareas (ahora con usuarios ya cargados)
+        this.tareas = (data.tareas ?? []).map(tarea => ({
+          id: tarea.id,
+          titulo: tarea.titulo,
+          descripcion: tarea.descripcion,
+          prioridad: tarea.prioridad,
+          estado: tarea.estado,
+          idProyecto: tarea.id_proyecto,
+          idEtiqueta: tarea.id_etiqueta,
+          idUsuario: tarea.id_usuario,
+          nombreEtiqueta: this.obtenerNombreEtiqueta(tarea.id_etiqueta),
+          nombreUsuario: this.obtenerNombreUsuario(tarea.id_usuario)
+        }));
+        console.log('Tareas procesadas:', this.tareas);
+      },
+      error: (err) => {
+        console.error('Error al cargar datos:', err);
+        this.etiquetas = [];
+        this.usuarios = [];
+        this.tareas = [];
+      }
+    });
   }
 
   cargarProyecto(): void {
@@ -104,62 +144,130 @@ export class GestionTareas implements OnInit {
 
   cargarEtiquetas(): void {
     this.http.get<Etiqueta[]>(this.apiEtiquetasUrl).subscribe({
-      next: (data) => this.etiquetas = data ?? [],
-      error: () => this.etiquetas = []
+      next: (data) => {
+        console.log('Etiquetas recargadas:', data);
+        this.etiquetas = data ?? [];
+      },
+      error: (err) => {
+        console.error('Error al cargar etiquetas:', err);
+        this.etiquetas = [];
+      }
     });
   }
 
-  cargarUsuariosProyecto(): void {
-    // Primero obtenemos los usuarios-proyecto
-    this.http.get<UsuarioProyecto[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}`).subscribe({
-      next: (usuariosProyecto) => {
-        // Luego obtenemos todos los usuarios
-        this.http.get<Usuario[]>(this.apiUsuariosUrl).subscribe({
-          next: (todosUsuarios) => {
-            // Filtramos solo los usuarios que están en este proyecto
-            const idsUsuariosProyecto = usuariosProyecto.map(up => up.idUsuario);
-            this.usuariosProyecto = todosUsuarios.filter(u => 
-              idsUsuariosProyecto.includes(u.id)
-            );
-          },
-          error: () => this.usuariosProyecto = []
-        });
+  cargarUsuarios(): void {
+    // Cargar usuarios que pertenecen al proyecto usando el endpoint de usuarios-proyectos
+    this.http.get<any[]>(`http://localhost:8080/api/v1/usuarios-proyectos/proyecto/${this.proyectoId}/detalles`).subscribe({
+      next: (data) => {
+        console.log('Usuarios recargados:', data);
+        // Mapear los usuarios del proyecto a la estructura de Usuario
+        this.usuarios = (data ?? []).map(up => ({
+          id: up.id_usuario,
+          nombre: up.nombre_usuario,
+          email: up.email_usuario
+        }));
       },
-      error: () => this.usuariosProyecto = []
+      error: (err) => {
+        console.error('Error al cargar usuarios del proyecto:', err);
+        this.usuarios = [];
+      }
     });
   }
 
   cargarTareas(): void {
-    this.http.get<Tarea[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`).subscribe({
-      next: (data) => this.tareas = data ?? [],
-      error: () => this.tareas = []
+    this.http.get<any[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`).subscribe({
+      next: (data) => {
+        console.log('Tareas recargadas (raw):', data);
+        // Mapear de snake_case a camelCase y enriquecer con nombres
+        this.tareas = (data ?? []).map(tarea => ({
+          id: tarea.id,
+          titulo: tarea.titulo,
+          descripcion: tarea.descripcion,
+          prioridad: tarea.prioridad,
+          estado: tarea.estado,
+          idProyecto: tarea.id_proyecto,
+          idEtiqueta: tarea.id_etiqueta,
+          idUsuario: tarea.id_usuario,
+          nombreEtiqueta: this.obtenerNombreEtiqueta(tarea.id_etiqueta),
+          nombreUsuario: this.obtenerNombreUsuario(tarea.id_usuario)
+        }));
+        console.log('Tareas procesadas después de recarga:', this.tareas);
+      },
+      error: (err) => {
+        console.error('Error al cargar tareas:', err);
+        this.tareas = [];
+      }
     });
   }
 
-  mostrarFormCrear(): void {
-    this.nuevaTarea = this.nuevaTareaVacia();
-    this.modoEdicion = false;
+  mostrarFormNuevo(): void {
+    this.tareaEditandoId = null;
+    this.tareaForm = {
+      titulo: '',
+      descripcion: '',
+      prioridad: 'media',
+      estado: 'pendiente',
+      idProyecto: this.proyectoId,
+      idEtiqueta: null,
+      idUsuario: null
+    };
     this.mostrarFormulario = true;
   }
 
-  editarTarea(tarea: Tarea): void {
-    this.nuevaTarea = { ...tarea };
-    this.modoEdicion = true;
+  editarTarea(tarea: TareaDetalle): void {
+    this.tareaEditandoId = tarea.id ?? null;
+    // AUTOCOMPLETAR todos los campos del formulario
+    this.tareaForm = {
+      id: tarea.id,
+      titulo: tarea.titulo,
+      descripcion: tarea.descripcion,
+      prioridad: tarea.prioridad,
+      estado: tarea.estado,
+      idProyecto: tarea.idProyecto,
+      idEtiqueta: tarea.idEtiqueta ?? null,
+      idUsuario: tarea.idUsuario ?? null
+    };
     this.mostrarFormulario = true;
+    console.log('Editando tarea:', this.tareaForm);
   }
 
   guardarTarea(): void {
+    if (!this.tareaForm.titulo.trim()) {
+      alert('El título es obligatorio');
+      return;
+    }
+
     this.cargando = true;
 
-    const tareaEnviar = {
-      ...this.nuevaTarea,
-      id_proyecto: this.proyectoId,
-      id_etiqueta: this.nuevaTarea.idEtiqueta,
-      id_usuario: this.nuevaTarea.idUsuario || null
+    // Preparar datos para enviar con nombres snake_case que espera el backend
+    const tareaData: any = {
+      titulo: this.tareaForm.titulo.trim(),
+      descripcion: this.tareaForm.descripcion?.trim() || '',
+      prioridad: this.tareaForm.prioridad,
+      estado: this.tareaForm.estado,
+      id_proyecto: this.proyectoId  // Backend espera snake_case
     };
 
-    if (this.modoEdicion && this.nuevaTarea.id) {
-      this.http.put<Tarea>(`${this.apiTareasUrl}/${this.nuevaTarea.id}`, tareaEnviar).subscribe({
+    // Solo agregar id_etiqueta si tiene un valor válido
+    if (this.tareaForm.idEtiqueta && this.tareaForm.idEtiqueta > 0) {
+      tareaData.id_etiqueta = this.tareaForm.idEtiqueta;
+    }
+
+    // Solo agregar id_usuario si tiene un valor válido
+    if (this.tareaForm.idUsuario && this.tareaForm.idUsuario > 0) {
+      tareaData.id_usuario = this.tareaForm.idUsuario;
+    }
+
+    console.log('Formulario original:', this.tareaForm);
+    console.log('Datos a enviar:', tareaData);
+    console.log('Datos JSON:', JSON.stringify(tareaData));
+
+    if (this.tareaEditandoId) {
+      // ACTUALIZAR
+      this.http.put<Tarea>(
+        `${this.apiTareasUrl}/${this.tareaEditandoId}`,
+        tareaData
+      ).subscribe({
         next: () => {
           this.cargarTareas();
           this.cancelarFormulario();
@@ -167,11 +275,13 @@ export class GestionTareas implements OnInit {
         },
         error: (error) => {
           console.error('Error al actualizar tarea:', error);
+          alert('Error al actualizar la tarea');
           this.cargando = false;
         }
       });
     } else {
-      this.http.post<Tarea>(`${this.apiTareasUrl}/crear`, tareaEnviar).subscribe({
+      // CREAR
+      this.http.post<Tarea>(`${this.apiTareasUrl}/crear`, tareaData).subscribe({
         next: () => {
           this.cargarTareas();
           this.cancelarFormulario();
@@ -179,6 +289,7 @@ export class GestionTareas implements OnInit {
         },
         error: (error) => {
           console.error('Error al crear tarea:', error);
+          alert('Error al crear la tarea');
           this.cargando = false;
         }
       });
@@ -199,27 +310,29 @@ export class GestionTareas implements OnInit {
   }
 
   cancelarFormulario(): void {
-    this.nuevaTarea = this.nuevaTareaVacia();
-    this.mostrarFormulario = false;
-    this.modoEdicion = false;
-  }
-
-  obtenerNombreEtiqueta(id: number): string {
-    return this.etiquetas.find(e => e.id === id)?.nombre || 'Sin etiqueta';
-  }
-
-  obtenerNombreUsuario(id: number | undefined): string {
-    if (!id) return 'Sin asignar';
-    return this.usuariosProyecto.find(u => u.id === id)?.nombre || 'Sin asignar';
-  }
-
-  obtenerTextoPrioridad(prioridad: string): string {
-    const prioridades: { [key: string]: string } = {
-      'baja': 'Baja',
-      'media': 'Media',
-      'alta': 'Alta'
+    this.tareaEditandoId = null;
+    this.tareaForm = {
+      titulo: '',
+      descripcion: '',
+      prioridad: 'media',
+      estado: 'pendiente',
+      idProyecto: this.proyectoId,
+      idEtiqueta: null,
+      idUsuario: null
     };
-    return prioridades[prioridad] || prioridad;
+    this.mostrarFormulario = false;
+  }
+
+  obtenerNombreEtiqueta(idEtiqueta: number | null | undefined): string {
+    if (!idEtiqueta) return 'Sin etiqueta';
+    const etiqueta = this.etiquetas.find(e => e.id === idEtiqueta);
+    return etiqueta?.nombre || 'Sin etiqueta';
+  }
+
+  obtenerNombreUsuario(idUsuario: number | null | undefined): string {
+    if (!idUsuario) return 'Sin asignar';
+    const usuario = this.usuarios.find(u => u.id === idUsuario);
+    return usuario?.nombre || 'Sin asignar';
   }
 
   obtenerTextoEstado(estado: string): string {
@@ -231,7 +344,16 @@ export class GestionTareas implements OnInit {
     return estados[estado] || estado;
   }
 
+  obtenerTextoPrioridad(prioridad: string): string {
+    const prioridades: { [key: string]: string } = {
+      'baja': 'Baja',
+      'media': 'Media',
+      'alta': 'Alta'
+    };
+    return prioridades[prioridad] || prioridad;
+  }
+
   volver(): void {
-    this.router.navigate(['/proyectos']);
+    this.router.navigate(['/proyectos', this.proyectoId]);
   }
 }

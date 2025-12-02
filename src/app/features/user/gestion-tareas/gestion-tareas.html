@@ -3,65 +3,59 @@
     <!-- Header -->
     <div class="tareas-header">
       <button class="btn-volver" (click)="volver()">
-        ← Volver a Proyectos
+        ← Volver al Proyecto
       </button>
       <h1>Gestión de Tareas</h1>
       <p class="proyecto-nombre" *ngIf="proyecto">{{ proyecto.nombre }}</p>
     </div>
 
-    <!-- Botón crear nueva tarea -->
+    <!-- Botón nueva tarea -->
     <div class="actions-bar" *ngIf="!mostrarFormulario">
-      <button class="btn-nueva-tarea" (click)="mostrarFormCrear()">
-        + Nueva Tarea
+      <button class="btn-nueva-tarea" (click)="mostrarFormNuevo()">
+        Nueva Tarea
       </button>
     </div>
 
-    <!-- Formulario de crear/editar tarea -->
+    <!-- Formulario -->
     <div class="formulario-card" *ngIf="mostrarFormulario">
       <div class="card-header">
-        <h2>{{ modoEdicion ? 'Editar Tarea' : 'Nueva Tarea' }}</h2>
+        <h2>{{ tareaEditandoId ? 'Editar Tarea' : 'Nueva Tarea' }}</h2>
         <button class="btn-cerrar" (click)="cancelarFormulario()">×</button>
       </div>
 
-      <form (ngSubmit)="guardarTarea()" #tareaForm="ngForm">
+      <form (ngSubmit)="guardarTarea()" #tareaFormElement="ngForm">
         <div class="form-group">
           <label for="titulo">Título *</label>
-          <input type="text" id="titulo" [(ngModel)]="nuevaTarea.titulo" name="titulo" required
-            placeholder="Nombre de la tarea">
+          <input
+            type="text"
+            id="titulo"
+            [(ngModel)]="tareaForm.titulo"
+            name="titulo"
+            placeholder="Título de la tarea"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" [(ngModel)]="nuevaTarea.descripcion" name="descripcion" rows="4"
-            placeholder="Detalles de la tarea"></textarea>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="etiqueta">Etiqueta *</label>
-            <select id="etiqueta" [(ngModel)]="nuevaTarea.idEtiqueta" name="etiqueta" required>
-              <option value="0" disabled>Seleccionar etiqueta</option>
-              <option *ngFor="let etiqueta of etiquetas" [value]="etiqueta.id">
-                {{ etiqueta.nombre }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="usuario">Asignar a</label>
-            <select id="usuario" [(ngModel)]="nuevaTarea.idUsuario" name="usuario">
-              <option [value]="0">Sin asignar</option>
-              <option *ngFor="let usuario of usuariosProyecto" [value]="usuario.id">
-                {{ usuario.nombre }}
-              </option>
-            </select>
-          </div>
+          <textarea
+            id="descripcion"
+            [(ngModel)]="tareaForm.descripcion"
+            name="descripcion"
+            placeholder="Descripción detallada de la tarea"
+            rows="4"
+          ></textarea>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="prioridad">Prioridad</label>
-            <select id="prioridad" [(ngModel)]="nuevaTarea.prioridad" name="prioridad">
+            <select
+              id="prioridad"
+              [(ngModel)]="tareaForm.prioridad"
+              name="prioridad"
+              required
+            >
               <option value="baja">Baja</option>
               <option value="media">Media</option>
               <option value="alta">Alta</option>
@@ -70,10 +64,45 @@
 
           <div class="form-group">
             <label for="estado">Estado</label>
-            <select id="estado" [(ngModel)]="nuevaTarea.estado" name="estado">
+            <select
+              id="estado"
+              [(ngModel)]="tareaForm.estado"
+              name="estado"
+              required
+            >
               <option value="pendiente">Pendiente</option>
               <option value="en_progreso">En Progreso</option>
               <option value="completada">Completada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="etiqueta">Etiqueta</label>
+            <select
+              id="etiqueta"
+              [(ngModel)]="tareaForm.idEtiqueta"
+              name="etiqueta"
+            >
+              <option [ngValue]="null">Sin etiqueta</option>
+              <option *ngFor="let etiqueta of etiquetas" [ngValue]="etiqueta.id">
+                {{ etiqueta.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="usuario">Asignar a</label>
+            <select
+              id="usuario"
+              [(ngModel)]="tareaForm.idUsuario"
+              name="usuario"
+            >
+              <option [ngValue]="null">Sin asignar</option>
+              <option *ngFor="let usuario of usuarios" [ngValue]="usuario.id">
+                {{ usuario.nombre }}
+              </option>
             </select>
           </div>
         </div>
@@ -82,25 +111,28 @@
           <button type="button" class="btn-cancelar" (click)="cancelarFormulario()">
             Cancelar
           </button>
-          <button type="submit" class="btn-guardar" [disabled]="!tareaForm.valid || cargando">
-            {{ cargando ? 'Guardando...' : (modoEdicion ? 'Actualizar Tarea' : 'Crear Tarea') }}
+          <button type="submit" class="btn-guardar" [disabled]="!tareaFormElement.valid || cargando">
+            {{ cargando ? 'Guardando...' : (tareaEditandoId ? 'Actualizar' : 'Crear Tarea') }}
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Lista de tareas -->
+    <!-- Grid de tareas -->
     <div class="tareas-grid" *ngIf="tareas.length > 0">
       <div class="tarea-card" *ngFor="let tarea of tareas">
         <div class="tarea-header">
           <div class="tarea-info">
             <h3>{{ tarea.titulo }}</h3>
-            <span class="badge badge-etiqueta">{{ obtenerNombreEtiqueta(tarea.idEtiqueta) }}</span>
+            <span class="badge-etiqueta">
+              {{ tarea.nombreEtiqueta }}
+            </span>
           </div>
-          <button class="btn-eliminar-card" (click)="eliminarTarea(tarea.id)">×</button>
         </div>
 
-        <p class="tarea-descripcion" *ngIf="tarea.descripcion">{{ tarea.descripcion }}</p>
+        <p class="tarea-descripcion" *ngIf="tarea.descripcion">
+          {{ tarea.descripcion }}
+        </p>
 
         <div class="tarea-badges">
           <span class="badge badge-prioridad-{{ tarea.prioridad }}">
@@ -111,10 +143,11 @@
           </span>
         </div>
 
+        <!-- Mostrar asignación -->
         <div class="tarea-asignacion" *ngIf="tarea.idUsuario">
-          <span class="asignado-a">
-            👤 Asignado a: <strong>{{ obtenerNombreUsuario(tarea.idUsuario) }}</strong>
-          </span>
+          <p class="asignado-a">
+            👤 Asignado a: <strong>{{ tarea.nombreUsuario }}</strong>
+          </p>
         </div>
 
         <div class="tarea-actions">
@@ -130,9 +163,9 @@
 
     <!-- Empty state -->
     <div class="empty-state" *ngIf="tareas.length === 0 && !mostrarFormulario">
-      <p>No hay tareas creadas para este proyecto</p>
-      <button class="btn-crear-primera" (click)="mostrarFormCrear()">
-        Crear primera tarea
+      <p>No hay tareas en este proyecto</p>
+      <button class="btn-crear-primera" (click)="mostrarFormNuevo()">
+        ➕ Crear primera tarea
       </button>
     </div>
   </div>

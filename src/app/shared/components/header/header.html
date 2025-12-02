@@ -7,7 +7,13 @@
             <a routerLink="/inicio-sesion">Inicio Sesion</a>
         </ng-container>
         <ng-container *ngIf="auth.isAutenticado$ | async">
-                <button (click)="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+            <a routerLink="/mis-invitaciones" class="btn-invitaciones">
+                📩 Mis Invitaciones
+                <span class="badge-notificacion" *ngIf="cantidadInvitaciones > 0">
+                    {{ cantidadInvitaciones }}
+                </span>
+            </a>
+            <button (click)="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
         </ng-container>
     </nav>
 </header>

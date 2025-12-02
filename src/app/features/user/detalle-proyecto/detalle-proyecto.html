@@ -111,7 +111,7 @@
           <div class="tarea-info">
             <div class="tarea-header">
               <h4>{{ tarea.titulo }}</h4>
-              <span class="badge badge-etiqueta">{{ obtenerNombreEtiqueta(tarea.idEtiqueta) }}</span>
+              <span class="badge badge-etiqueta">{{ obtenerNombreEtiqueta(tarea.id_etiqueta) }}</span>
             </div>
             <p class="tarea-descripcion" *ngIf="tarea.descripcion">{{ tarea.descripcion }}</p>
             <div class="tarea-badges">
@@ -120,6 +120,11 @@
               </span>
               <span class="badge badge-estado-tarea-{{ tarea.estado }}">
                 {{ obtenerTextoEstadoTarea(tarea.estado) }}
+              </span>
+            </div>
+            <div class="tarea-asignacion" *ngIf="tarea.id_usuario">
+              <span class="asignado-a">
+                👤 Asignado a: <strong>{{ obtenerNombreUsuario(tarea.id_usuario) }}</strong>
               </span>
             </div>
           </div>
@@ -147,16 +152,16 @@
 
       <!-- Lista de usuarios -->
       <div class="usuarios-lista" *ngIf="usuariosProyecto.length > 0">
-        <div class="usuario-item" *ngFor="let usuarioProyecto of usuariosProyecto">
+        <div class="usuario-item" *ngFor="let usuario of usuariosProyecto">
           <div class="usuario-avatar">
-            {{ obtenerIniciales(usuarioProyecto.usuario?.nombre || 'Usuario') }}
+            {{ obtenerIniciales(usuario.nombre) }}
           </div>
           <div class="usuario-info">
-            <h4>{{ usuarioProyecto.usuario?.nombre || 'Usuario' }}</h4>
-            <p>{{ usuarioProyecto.usuario?.email || 'Sin email' }}</p>
+            <h4>{{ usuario.nombre }}</h4>
+            <p>{{ usuario.email }}</p>
           </div>
-          <span class="badge badge-rol-{{ usuarioProyecto.rol }}">
-            {{ obtenerTextoRol(usuarioProyecto.rol) }}
+          <span class="badge badge-rol-{{ usuario.rol }}">
+            {{ obtenerTextoRol(usuario.rol) }}
           </span>
         </div>
       </div>
