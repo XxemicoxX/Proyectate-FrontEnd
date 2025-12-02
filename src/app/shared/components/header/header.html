@@ -1,8 +1,13 @@
 <header>
     <nav>
-        <a routerLink="/">Inicio</a>
-        <a routerLink="/nosotros">Nosotros</a>
-        <a routerLink="/contacto">Contacto</a>
-        <a routerLink="/inicio-sesion">Inicio Sesion</a>
+        <ng-container *ngIf="!(auth.isAutenticado$ | async)">
+            <a routerLink="/">Inicio</a>
+            <a routerLink="/nosotros">Nosotros</a>
+            <a routerLink="/contacto">Contacto</a>
+            <a routerLink="/inicio-sesion">Inicio Sesion</a>
+        </ng-container>
+        <ng-container *ngIf="auth.isAutenticado$ | async">
+                <button (click)="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+        </ng-container>
     </nav>
 </header>

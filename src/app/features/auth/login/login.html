@@ -1,12 +1,15 @@
 <h1>Inicio de sesión</h1>
 <form [formGroup]="formLogin" (submit)="iniciarSesion()">
     <div>
-        <label for="usuario">Usuario</label>
-        <input type="text" id="usuario" formControlName="email">
+        <label for="usuario">Correo</label>
+        <input type="email" id="usuario" formControlName="email">
     </div>
     <div>
         <label for="clave">Contraseña</label>
-        <input type="text" id="clave" formControlName="password">
+        <input type="password" id="clave" formControlName="password">
+    </div>
+    <div *ngIf="errorMessage" style="color: red;">
+        {{ errorMessage }}
     </div>
     <button [disabled]="formLogin.invalid">
         Iniciar

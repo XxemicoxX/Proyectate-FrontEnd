@@ -27,9 +27,15 @@ export class JwtService {
     }
   }
 
-  // Extrae ID del usuario desde el token (claim SUB, ID o EMAIL)
   getUserId(): number | null {
     const payload = this.getPayload();
-    return payload?.idUsuario ?? null; //Asi viene el tokken
+    return payload?.idUsuario ?? null;
   }
+
+  // 🔥 NUEVO: Obtener rol
+  getUserRole(): string | null {
+    const payload = this.getPayload();
+    return payload?.roles?.[0]?.authority ?? null;
+  }
+
 }

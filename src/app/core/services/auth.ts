@@ -10,12 +10,14 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class AuthService {
 
-  URL = `${environment.apiURL}/authenticate`;
+  // urls
+  private URL_LOGIN = `${environment.apiURL}/authenticate`;
+  private URL_REGISTER = `${environment.apiURL}/register`;
+
   http = inject(HttpClient);
 
-
-  // Variable temporal, luege se debe borrar
-  public token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsImlhdCI6MTc2NDI2NDgyNCwiZXhwIjoxNzY0ODY5NjI0fQ.cWY7JVkQfCv82dgg7LMHJI5uJdq2c3NW4Mt6E3XbkB4JBE1JPgz1bwmc5nbl6DGDSmBtqOYItOBsagZrOsa2dA";
+  // Token temporal asignado
+  public token = "";
 
   // Observable para conocer si está autenticado
   private isAuth = new BehaviorSubject<boolean>(this.hasToken());
@@ -23,18 +25,19 @@ export class AuthService {
 
   constructor() {
     const savedToken = localStorage.getItem('token');  // Recupera token si existe
+
     if (savedToken) {
       this.token = savedToken;   // Lo asigna para usarlo en interceptores
       this.isAuth.next(true);    // Le dice al sistema que el usuario está autenticado
     }
   }
 
+  // login
   authenticate(credenciales: CredentialsInterface) {
-    return this.http.post<any>(this.URL, credenciales).pipe(
+    return this.http.post<any>(this.URL_LOGIN, credenciales).pipe(
       tap(resp => {
         console.log("RESPUESTA DEL LOGIN:", resp);
 
-        //El backend devuelve access_token (con guion bajo)
         const accessToken = resp?.access_token;
 
         if (!accessToken) {
@@ -50,6 +53,22 @@ export class AuthService {
     );
   }
 
+  //registro
+  register(data: { name: string; email: string; password: string; }) {
+    return this.http.post<any>(this.URL_REGISTER, data).pipe(
+      tap(resp => {
+        console.log("RESPUESTA DEL REGISTRO:", resp);
+        if (resp?.access_token) {
+          localStorage.setItem("token", resp.access_token);
+          this.token = resp.access_token;
+          this.isAuth.next(true);
+        }
+
+      })
+    );
+  }
+
+  //token y estado
   private hasToken(): boolean {
     return localStorage.getItem('token') !== null;
   }
@@ -60,4 +79,19 @@ export class AuthService {
     const decoded: any = jwtDecode(this.token);
     return decoded.id || decoded.userId || null;
   }
+
+  //cerrar sesion
+  logout() {
+    localStorage.removeItem('token');
+    this.token = "";
+    this.isAuth.next(false);
+  }
+
+  get role(): string | null {
+    if (!this.token) return null;
+
+    const decoded: any = jwtDecode(this.token);
+    return decoded.role || null;
+  }
+
 }
