@@ -1,11 +1,11 @@
 <h2>Crea una nueva cuenta</h2>
 <h4><i>¡Es facil!</i></h4>
 <form [formGroup]="formRegistro" (ngSubmit)="enviarRegistro()">
-    <label for="nombre">Nombre de usuario:</label>
-    <input type="text" id="nombre" formControlName="nombre" required>
-    <div class="error" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
-        <div *ngIf="nombre.hasError('required')">Nombre es requerido</div>
-        <div *ngIf="nombre.hasError('minlength')">Nombre debe tener como mínimo 6 caracteres.</div>
+    <label for="name">Nombre del usuario:</label>
+    <input type="text" id="name" formControlName="name" required>
+    <div class="error" *ngIf="name.invalid && (name.dirty || name.touched)">
+        <div *ngIf="name.hasError('required')">nombre es requerido</div>
+        <div *ngIf="name.hasError('minlength')">nombre debe tener como mínimo 6 caracteres.</div>
     </div>
 
     <label for="email">Email:</label>
@@ -22,5 +22,5 @@
         <div *ngIf="password.hasError('minlength')">Contraseña debe ser mayor a 8 caracteres.</div>
     </div>
 
-   <button type="submit" [disabled]="formRegistro.invalid" routerLink="/inicio-sesion">Registrarse</button>
+   <button type="submit" [disabled]="formRegistro.invalid">Registrarse</button>
 </form>

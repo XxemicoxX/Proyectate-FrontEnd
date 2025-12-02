@@ -28,7 +28,7 @@ export const routes: Routes = [
         {path: 'editar/:id', component: FormProyecto},
         {path: ':id/tareas', component: GestionTareas},
         {path: ':id/usuarios', component: GestionUsuarios}
-    ]},
+    ],  canActivate: [authGuard]},
     { path: '', redirectTo: '/proyectos', pathMatch: 'full'},
     { path: '**', component: NoEncontrado, title: 'Página no encontrada' }
 ];

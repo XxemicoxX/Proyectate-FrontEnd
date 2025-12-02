@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CredentialsInterface } from '../../../shared/model/credentials.interface';
 import { AuthService } from '../../../core/services/auth';
 
@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class Login {
   loginService = inject(AuthService);
+  router = inject(Router);
 
   formLogin = new FormGroup({
     email: new FormControl('', [Validators.required]),
@@ -25,7 +26,8 @@ export class Login {
     }
     this.loginService.authenticate(credenciales).subscribe(
       (value)=>{
-        console.log(value);        
+        console.log(value);
+        this.router.navigate(['/proyectos']);       
       }
     );
   }
