@@ -36,11 +36,10 @@ export const routes: Routes = [
         {path: ':id/tareas', component: GestionTareas},
         {path: ':id/usuarios', component: GestionUsuarios},
         {path: ':id/invitar', component: InvitarUsuario}
-    ]},
-    { path: 'etiquetas', component: GestionEtiquetas},
-    { path: 'mis-invitaciones', component: MisInvitaciones},
-        {path: ':id/usuarios', component: GestionUsuarios}
-    ],  canActivate: [roleGuard], data: { roles: ["USER"] }},
+    ], canActivate: [roleGuard], data: { roles: ["USER"] }},
+    { path: 'etiquetas', component: GestionEtiquetas, canActivate: [roleGuard], data: { roles: ["USER"] }},
+    { path: 'mis-invitaciones', component: MisInvitaciones, canActivate: [roleGuard], data: { roles: ["USER"] }},
+        {path: ':id/usuarios', component: GestionUsuarios, canActivate: [roleGuard], data: { roles: ["USER"] }},
     { path: '', redirectTo: '/proyectos', pathMatch: 'full'},
     { path: '**', component: NoEncontrado, title: 'Página no encontrada' },
     { path: 'no-autorizado', component: NoAutorizado, title: 'Pagina no accesible'}
