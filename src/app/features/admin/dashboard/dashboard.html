@@ -1,1 +1,93 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Panel de Administración</h1>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="isLoading" class="loader">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- Contenido del Dashboard -->
+  <div *ngIf="!isLoading && !error">
+    <!-- Cards de Estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon users-icon">👥</div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ stats?.totalUsuarios || 0 }}</h3>
+          <p class="stat-label">Total Usuarios</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon projects-icon">📁</div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ stats?.totalProyectos || 0 }}</h3>
+          <p class="stat-label">Total Proyectos</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon active-icon">✓</div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ stats?.proyectosActivos || 0 }}</h3>
+          <p class="stat-label">Proyectos Activos</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon completed-icon">🎯</div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ stats?.proyectosCompletados || 0 }}</h3>
+          <p class="stat-label">Proyectos Completados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Proyectos Recientes -->
+    <div class="table-container">
+      <h2 class="table-title">Proyectos Recientes</h2>
+      
+      <div *ngIf="proyectosRecientes.length === 0" class="empty-state">
+        <p>No hay proyectos registrados</p>
+      </div>
+
+      <table *ngIf="proyectosRecientes.length > 0" class="projects-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Estado</th>
+            <th>Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proyecto of proyectosRecientes">
+            <td>{{ proyecto.id }}</td>
+            <td class="project-name">{{ proyecto.nombre }}</td>
+            <td class="project-description">{{ proyecto.descripcion }}</td>
+            <td>{{ proyecto.fechaInicio | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="estado-badge" [ngClass]="getEstadoClass(proyecto.estado)">
+                {{ proyecto.estado }}
+              </span>
+            </td>
+            <td>
+              <div class="user-info">
+                <strong>{{ proyecto.nombreUsuario }}</strong>
+                <small>{{ proyecto.emailUsuario }}</small>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
