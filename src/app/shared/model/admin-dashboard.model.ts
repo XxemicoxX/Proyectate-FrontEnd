@@ -1,7 +1,7 @@
 export interface DashboardStats {
   totalUsuarios: number;
   totalProyectos: number;
-  proyectosActivos: number;
+  proyectosProgreso: number;
   proyectosCompletados: number;
 }
 
