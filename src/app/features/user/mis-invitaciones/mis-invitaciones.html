@@ -1,0 +1,39 @@
+<div class="invitaciones-container">
+  <h2>Mis Invitaciones</h2>
+
+  <div class="cargando" *ngIf="cargando">
+    <p>Cargando invitaciones...</p>
+  </div>
+
+  <div *ngIf="!cargando && invitaciones.length === 0" class="empty-state">
+    <p>📭 No tienes invitaciones pendientes</p>
+  </div>
+
+  <div class="invitacion-card" *ngFor="let inv of invitaciones">
+    <div class="invitacion-header">
+      <h3>{{ inv.nombre_proyecto }}</h3>
+      <span class="badge badge-{{ inv.rol_asignado }}">{{ inv.rol_asignado }}</span>
+    </div>
+    
+    <p class="descripcion" *ngIf="inv.descripcion_proyecto">
+      {{ inv.descripcion_proyecto }}
+    </p>
+    
+    <p class="invitador">
+      Invitado por: <strong>{{ inv.nombre_invitador }}</strong>
+    </p>
+    
+    <p class="fecha">
+      {{ inv.fecha_invitacion | date:'medium':'':'es' }}
+    </p>
+
+    <div class="invitacion-actions">
+      <button class="btn-rechazar" (click)="responder(inv.id!, false)">
+        ✕ Rechazar
+      </button>
+      <button class="btn-aceptar" (click)="responder(inv.id!, true)">
+        ✓ Aceptar
+      </button>
+    </div>
+  </div>
+</div>

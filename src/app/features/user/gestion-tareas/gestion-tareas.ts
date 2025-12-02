@@ -13,6 +13,7 @@ interface Tarea {
   id?: number;
   idProyecto?: number;
   idEtiqueta: number;
+  idUsuario?: number;
   titulo: string;
   descripcion: string;
   prioridad: string;
@@ -25,6 +26,19 @@ interface Proyecto {
   descripcion: string;
 }
 
+interface Usuario {
+  id: number;
+  nombre: string;
+  email: string;
+}
+
+interface UsuarioProyecto {
+  id?: number;
+  idUsuario: number;
+  idProyecto: number;
+  rol: string;
+}
+
 @Component({
   selector: 'app-gestion-tareas',
   imports: [CommonModule, FormsModule],
@@ -34,10 +48,11 @@ interface Proyecto {
 export class GestionTareas implements OnInit {
   proyecto: Proyecto | null = null;
   proyectoId: number = 0;
-  
+
   etiquetas: Etiqueta[] = [];
   tareas: Tarea[] = [];
-  
+  usuariosProyecto: Usuario[] = [];
+
   nuevaTarea: Tarea = this.nuevaTareaVacia();
   mostrarFormulario = false;
   modoEdicion = false;
@@ -46,12 +61,14 @@ export class GestionTareas implements OnInit {
   private apiProyectosUrl = 'http://localhost:8080/api/v1/proyectos';
   private apiEtiquetasUrl = 'http://localhost:8080/api/v1/etiquetas';
   private apiTareasUrl = 'http://localhost:8080/api/v1/tareas';
+  private apiUsuariosUrl = 'http://localhost:8080/api/v1/usuarios';
+  private apiUsuariosProyectoUrl = 'http://localhost:8080/api/v1/usuarios-proyecto';
 
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -59,6 +76,7 @@ export class GestionTareas implements OnInit {
       this.proyectoId = +id;
       this.cargarProyecto();
       this.cargarEtiquetas();
+      this.cargarUsuariosProyecto();
       this.cargarTareas();
     }
   }
@@ -66,6 +84,7 @@ export class GestionTareas implements OnInit {
   nuevaTareaVacia(): Tarea {
     return {
       idEtiqueta: 0,
+      idUsuario: 0,
       titulo: '',
       descripcion: '',
       prioridad: 'media',
@@ -87,6 +106,26 @@ export class GestionTareas implements OnInit {
     this.http.get<Etiqueta[]>(this.apiEtiquetasUrl).subscribe({
       next: (data) => this.etiquetas = data ?? [],
       error: () => this.etiquetas = []
+    });
+  }
+
+  cargarUsuariosProyecto(): void {
+    // Primero obtenemos los usuarios-proyecto
+    this.http.get<UsuarioProyecto[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}`).subscribe({
+      next: (usuariosProyecto) => {
+        // Luego obtenemos todos los usuarios
+        this.http.get<Usuario[]>(this.apiUsuariosUrl).subscribe({
+          next: (todosUsuarios) => {
+            // Filtramos solo los usuarios que están en este proyecto
+            const idsUsuariosProyecto = usuariosProyecto.map(up => up.idUsuario);
+            this.usuariosProyecto = todosUsuarios.filter(u => 
+              idsUsuariosProyecto.includes(u.id)
+            );
+          },
+          error: () => this.usuariosProyecto = []
+        });
+      },
+      error: () => this.usuariosProyecto = []
     });
   }
 
@@ -115,7 +154,8 @@ export class GestionTareas implements OnInit {
     const tareaEnviar = {
       ...this.nuevaTarea,
       id_proyecto: this.proyectoId,
-      id_etiqueta: this.nuevaTarea.idEtiqueta
+      id_etiqueta: this.nuevaTarea.idEtiqueta,
+      id_usuario: this.nuevaTarea.idUsuario || null
     };
 
     if (this.modoEdicion && this.nuevaTarea.id) {
@@ -166,6 +206,11 @@ export class GestionTareas implements OnInit {
 
   obtenerNombreEtiqueta(id: number): string {
     return this.etiquetas.find(e => e.id === id)?.nombre || 'Sin etiqueta';
+  }
+
+  obtenerNombreUsuario(id: number | undefined): string {
+    if (!id) return 'Sin asignar';
+    return this.usuariosProyecto.find(u => u.id === id)?.nombre || 'Sin asignar';
   }
 
   obtenerTextoPrioridad(prioridad: string): string {

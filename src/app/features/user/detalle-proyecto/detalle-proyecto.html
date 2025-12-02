@@ -1,0 +1,184 @@
+<div class="detalle-container" (click)="cerrarMenu()">
+  <div class="detalle-wrapper">
+    <!-- Header con info del proyecto -->
+    <div class="proyecto-header">
+      <button class="btn-volver" (click)="volver()">
+        ← Volver a Proyectos
+      </button>
+
+      <div class="header-content" *ngIf="proyecto">
+        <div class="header-info">
+          <h1>{{ proyecto.nombre }}</h1>
+          <p class="descripcion">{{ proyecto.descripcion }}</p>
+          <div class="metadata">
+            <span class="badge badge-{{ proyecto.estado }}">
+              {{ obtenerTextoEstado(proyecto.estado) }}
+            </span>
+            <span class="fecha" *ngIf="proyecto.fechaInicio">
+              📅 Inicio: {{ proyecto.fechaInicio | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-menu" (click)="toggleMenu(); $event.stopPropagation()" [class.active]="menuAbierto">
+            ⋮
+          </button>
+
+          <!-- Menú desplegable -->
+          <div class="menu-opciones" *ngIf="menuAbierto" (click)="$event.stopPropagation()">
+            <button (click)="editarProyecto()">
+              <span class="icon">✏️</span>
+              Editar Proyecto
+            </button>
+            <button (click)="navegarAEtiquetas()">
+              <span class="icon">🏷️</span>
+              Gestionar Etiquetas
+            </button>
+            <button class="menu-eliminar" (click)="eliminarProyecto()">
+              <span class="icon">🗑️</span>
+              Eliminar Proyecto
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="estadisticas-grid" *ngIf="proyecto">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-info">
+          <h3>{{ totalTareas }}</h3>
+          <p>Total Tareas</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <h3>{{ tareasCompletadas }}</h3>
+          <p>Completadas</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-info">
+          <h3>{{ tareasEnProgreso }}</h3>
+          <p>En Progreso</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-info">
+          <h3>{{ tareasPendientes }}</h3>
+          <p>Pendientes</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-progress">
+        <div class="progress-circle">
+          <svg viewBox="0 0 100 100">
+            <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+            <circle 
+              class="progress-bar" 
+              cx="50" 
+              cy="50" 
+              r="45"
+              [style.stroke-dashoffset]="283 - (283 * porcentajeCompletado / 100)">
+            </circle>
+          </svg>
+          <div class="progress-text">{{ porcentajeCompletado }}%</div>
+        </div>
+        <p>Progreso</p>
+      </div>
+    </div>
+
+    <!-- Sección de Tareas -->
+    <div class="seccion-tareas">
+      <div class="seccion-header">
+        <h2>📋 Tareas del Proyecto</h2>
+        <button class="btn-gestionar" (click)="navegarATareas()">
+          Gestionar Tareas
+        </button>
+      </div>
+
+      <!-- Lista de tareas -->
+      <div class="tareas-lista" *ngIf="tareas.length > 0">
+        <div class="tarea-item" *ngFor="let tarea of tareas">
+          <div class="tarea-info">
+            <div class="tarea-header">
+              <h4>{{ tarea.titulo }}</h4>
+              <span class="badge badge-etiqueta">{{ obtenerNombreEtiqueta(tarea.idEtiqueta) }}</span>
+            </div>
+            <p class="tarea-descripcion" *ngIf="tarea.descripcion">{{ tarea.descripcion }}</p>
+            <div class="tarea-badges">
+              <span class="badge badge-prioridad-{{ tarea.prioridad }}">
+                {{ obtenerTextoPrioridad(tarea.prioridad) }}
+              </span>
+              <span class="badge badge-estado-tarea-{{ tarea.estado }}">
+                {{ obtenerTextoEstadoTarea(tarea.estado) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state tareas -->
+      <div class="empty-state" *ngIf="tareas.length === 0">
+        <div class="empty-icon">📝</div>
+        <p>No hay tareas creadas</p>
+        <button class="btn-crear" (click)="navegarATareas()">
+          + Crear mi primera tarea
+        </button>
+      </div>
+    </div>
+
+    <!-- Sección de Usuarios -->
+    <div class="seccion-usuarios">
+      <div class="seccion-header">
+        <h2>👥 Equipo del Proyecto</h2>
+        <button class="btn-gestionar" (click)="navegarAUsuarios()">
+          Gestionar Usuarios
+        </button>
+      </div>
+
+      <!-- Lista de usuarios -->
+      <div class="usuarios-lista" *ngIf="usuariosProyecto.length > 0">
+        <div class="usuario-item" *ngFor="let usuarioProyecto of usuariosProyecto">
+          <div class="usuario-avatar">
+            {{ obtenerIniciales(usuarioProyecto.usuario?.nombre || 'Usuario') }}
+          </div>
+          <div class="usuario-info">
+            <h4>{{ usuarioProyecto.usuario?.nombre || 'Usuario' }}</h4>
+            <p>{{ usuarioProyecto.usuario?.email || 'Sin email' }}</p>
+          </div>
+          <span class="badge badge-rol-{{ usuarioProyecto.rol }}">
+            {{ obtenerTextoRol(usuarioProyecto.rol) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Empty state usuarios -->
+      <div class="empty-state" *ngIf="usuariosProyecto.length === 0">
+        <div class="empty-icon">👤</div>
+        <p>No hay usuarios asignados</p>
+        <button class="btn-crear" (click)="navegarAUsuarios()">
+          + Agregar mi primer usuario
+        </button>
+      </div>
+    </div>
+
+    <!-- Botones de acción principales -->
+    <div class="acciones-principales">
+      <button class="btn-accion btn-editar" (click)="editarProyecto()">
+        ✏️ Editar Proyecto
+      </button>
+      <button class="btn-accion btn-eliminar" (click)="eliminarProyecto()">
+        🗑️ Eliminar Proyecto
+      </button>
+    </div>
+  </div>
+</div>

@@ -9,14 +9,14 @@
       <p class="proyecto-nombre" *ngIf="proyecto">{{ proyecto.nombre }}</p>
     </div>
 
-    <!-- Botón agregar usuario -->
+    <!-- Botón invitar usuario -->
     <div class="actions-bar" *ngIf="!mostrarFormulario">
-      <button class="btn-nuevo-usuario" (click)="mostrarFormAgregar()">
-        + Agregar Usuario
+      <button class="btn-nuevo-usuario" (click)="irAInvitar()">
+        👥 Invitar Usuario
       </button>
     </div>
 
-    <!-- Formulario de agregar usuario -->
+    <!-- Formulario de agregar usuario existente (opcional - puedes eliminarlo si solo quieres invitaciones) -->
     <div class="formulario-card" *ngIf="mostrarFormulario">
       <div class="card-header">
         <h2>Agregar Usuario al Proyecto</h2>
@@ -82,8 +82,8 @@
     <!-- Empty state -->
     <div class="empty-state" *ngIf="usuariosProyecto.length === 0 && !mostrarFormulario">
       <p>No hay usuarios asignados a este proyecto</p>
-      <button class="btn-agregar-primero" (click)="mostrarFormAgregar()">
-        Agregar primer usuario
+      <button class="btn-agregar-primero" (click)="irAInvitar()">
+        👥 Invitar primer usuario
       </button>
     </div>
   </div>

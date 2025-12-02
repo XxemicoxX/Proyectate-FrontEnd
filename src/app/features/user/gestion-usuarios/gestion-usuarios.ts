@@ -86,6 +86,10 @@ export class GestionUsuarios implements OnInit {
     });
   }
 
+  irAInvitar(): void {
+    this.router.navigate(['/proyectos', this.proyectoId, 'invitar']);
+  }
+
   mostrarFormAgregar(): void {
     this.usuarioSeleccionado = 0;
     this.rolSeleccionado = 'colaborador';

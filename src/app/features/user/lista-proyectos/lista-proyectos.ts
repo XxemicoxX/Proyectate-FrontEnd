@@ -97,7 +97,7 @@ export class ListaProyectos implements OnInit {
   }
 
   verDetalles(proyecto: Proyecto): void {
-    this.router.navigate(['/proyectos', proyecto.id, 'detalles']);
+    this.router.navigate(['/proyectos', proyecto.id]);
   }
 
   obtenerTextoEstado(estado: string): string {

@@ -12,9 +12,12 @@ import { ListaProyectos } from './features/user/lista-proyectos/lista-proyectos'
 import { GestionTareas } from './features/user/gestion-tareas/gestion-tareas';
 import { GestionUsuarios } from './features/user/gestion-usuarios/gestion-usuarios';
 import { FormProyecto } from './features/user/form-proyecto/form-proyecto';
+import { DetalleProyecto } from './features/user/detalle-proyecto/detalle-proyecto';
+import { GestionEtiquetas } from './features/user/gestion-etiquetas/gestion-etiquetas';
+import { MisInvitaciones } from './features/user/mis-invitaciones/mis-invitaciones';
+import { InvitarUsuario } from './features/user/invitar-usuario/invitar-usuario';
 
 export const routes: Routes = [
-
     { path: '', component: Inicio, title: 'Inicio | Proyectate' },
     { path: 'nosotros', component: Nosotros, title: 'Nosotros | Proyectate' },
     { path: 'contacto', component: Contacto, title: 'Contacto | Proyectate' },
@@ -24,11 +27,14 @@ export const routes: Routes = [
     { path: 'proyectos', children: [
         {path: '', component: ListaProyectos},
         {path: 'crear', component: FormProyecto},
-        {path: 'crear', component: FormProyecto},
+        {path: ':id', component: DetalleProyecto},
         {path: 'editar/:id', component: FormProyecto},
         {path: ':id/tareas', component: GestionTareas},
-        {path: ':id/usuarios', component: GestionUsuarios}
+        {path: ':id/usuarios', component: GestionUsuarios},
+        {path: ':id/invitar', component: InvitarUsuario}
     ]},
+    { path: 'etiquetas', component: GestionEtiquetas},
+    { path: 'mis-invitaciones', component: MisInvitaciones},
     { path: '', redirectTo: '/proyectos', pathMatch: 'full'},
     { path: '**', component: NoEncontrado, title: 'Página no encontrada' }
 ];

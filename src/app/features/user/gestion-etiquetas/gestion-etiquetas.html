@@ -1,0 +1,75 @@
+<div class="etiquetas-container">
+  <div class="etiquetas-wrapper">
+    <!-- Header -->
+    <div class="etiquetas-header">
+      <button class="btn-volver" (click)="volver()">
+        ← Volver
+      </button>
+      <h1>Gestión de Etiquetas</h1>
+      <p class="subtitulo">Organiza tus tareas con etiquetas personalizadas</p>
+    </div>
+
+    <!-- Botón crear nueva etiqueta -->
+    <div class="actions-bar" *ngIf="!mostrarFormulario">
+      <button class="btn-nueva-etiqueta" (click)="mostrarFormCrear()">
+        + Nueva Etiqueta
+      </button>
+    </div>
+
+    <!-- Formulario de crear/editar etiqueta -->
+    <div class="formulario-card" *ngIf="mostrarFormulario">
+      <div class="card-header">
+        <h2>{{ modoEdicion ? 'Editar Etiqueta' : 'Nueva Etiqueta' }}</h2>
+        <button class="btn-cerrar" (click)="cancelarFormulario()">×</button>
+      </div>
+
+      <form (ngSubmit)="guardarEtiqueta()" #etiquetaForm="ngForm">
+        <div class="form-group">
+          <label for="nombre">Nombre de la Etiqueta *</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            [(ngModel)]="nuevaEtiqueta.nombre" 
+            name="nombre"
+            required
+            placeholder="Ej: Frontend, Backend, Diseño, Bug, Feature">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancelar" (click)="cancelarFormulario()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-guardar" [disabled]="!etiquetaForm.valid || cargando">
+            {{ cargando ? 'Guardando...' : (modoEdicion ? 'Actualizar Etiqueta' : 'Crear Etiqueta') }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de etiquetas -->
+    <div class="etiquetas-grid" *ngIf="etiquetas.length > 0">
+      <div class="etiqueta-card" *ngFor="let etiqueta of etiquetas">
+        <div class="etiqueta-icon">🏷️</div>
+        <div class="etiqueta-info">
+          <h3>{{ etiqueta.nombre }}</h3>
+        </div>
+        <div class="etiqueta-actions">
+          <button class="btn-editar" (click)="editarEtiqueta(etiqueta)">
+            ✏️
+          </button>
+          <button class="btn-eliminar" (click)="eliminarEtiqueta(etiqueta.id)">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="etiquetas.length === 0 && !mostrarFormulario">
+      <p>No hay etiquetas creadas</p>
+      <button class="btn-crear-primera" (click)="mostrarFormCrear()">
+        Crear mi primera etiqueta
+      </button>
+    </div>
+  </div>
+</div>

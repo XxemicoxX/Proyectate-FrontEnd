@@ -78,7 +78,6 @@ export class FormProyecto implements OnInit {
     };
 
     if (this.modoEdicion && this.proyecto.id) {
-      // CORREGIDO: usar this.proyecto.id en lugar de {id}
       this.http.put<Proyecto>(`${this.apiProyectosUrl}/${this.proyecto.id}`, proyectoEnviar).subscribe({
         next: () => {
           this.cargando = false;
