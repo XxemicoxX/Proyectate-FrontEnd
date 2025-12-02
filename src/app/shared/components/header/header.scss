@@ -12,12 +12,27 @@ header {
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
     padding: 1rem 2rem;
     
     ng-container {
       display: contents;
+    }
+
+    // Grupo de navegación principal
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    // Grupo de acciones (logout)
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
     }
 
     // Links del nav
@@ -30,6 +45,10 @@ header {
       font-weight: 500;
       font-size: 0.95rem;
       border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
 
       &:hover {
         background: rgba(255, 255, 255, 0.05);
@@ -44,22 +63,48 @@ header {
         border-color: rgba(0, 191, 255, 0.3);
       }
 
+      // Botón de proyectos
+      &.btn-proyectos {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08));
+        color: #66bb6a;
+        font-weight: 600;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+
+        &:hover {
+          background: linear-gradient(135deg, rgba(76, 175, 80, 0.25), rgba(76, 175, 80, 0.15));
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+          color: #66bb6a;
+          border-color: rgba(76, 175, 80, 0.4);
+        }
+
+        &.router-link-active {
+          background: linear-gradient(135deg, rgba(76, 175, 80, 0.25), rgba(76, 175, 80, 0.15));
+          color: #66bb6a;
+          border-color: rgba(76, 175, 80, 0.4);
+        }
+      }
+
       // Botón de invitaciones
       &.btn-invitaciones {
         position: relative;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
         background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.08));
         color: #00bfff;
         font-weight: 600;
         border: 1px solid rgba(0, 191, 255, 0.3);
-        padding: 0.7rem 1.5rem;
 
         &:hover {
           background: linear-gradient(135deg, rgba(0, 191, 255, 0.25), rgba(0, 191, 255, 0.15));
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 191, 255, 0.2);
+          color: #00bfff;
+          border-color: rgba(0, 191, 255, 0.4);
+        }
+
+        &.router-link-active {
+          background: linear-gradient(135deg, rgba(0, 191, 255, 0.25), rgba(0, 191, 255, 0.15));
+          color: #00bfff;
+          border-color: rgba(0, 191, 255, 0.4);
         }
 
         .badge-notificacion {
@@ -103,6 +148,7 @@ header {
       font-weight: 600;
       font-size: 0.95rem;
       transition: all 0.3s ease;
+      white-space: nowrap;
 
       &:hover {
         background: rgba(244, 67, 54, 0.2);
@@ -112,21 +158,63 @@ header {
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     nav {
       padding: 1rem;
+      
+      a {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+
+        // Ocultar texto en pantallas medianas, solo mostrar iconos
+        .text-label {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    nav {
       flex-wrap: wrap;
       justify-content: center;
       gap: 0.5rem;
 
-      a {
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
+      .nav-group,
+      .nav-actions {
+        width: 100%;
+        justify-content: center;
       }
 
       .btn-logout {
         width: 100%;
-        margin-top: 0.5rem;
+      }
+
+      a {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+
+        .text-label {
+          display: inline;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    nav {
+      padding: 0.75rem;
+
+      a {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        min-width: 100px;
+      }
+
+      .btn-logout {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
       }
     }
   }

@@ -80,52 +80,63 @@ export class DetalleProyecto implements OnInit {
   cargarDatos(): void {
     this.cargando = true;
     
-    // Cargar todos los datos en paralelo
-    forkJoin({
-      proyecto: this.http.get<Proyecto>(`${this.apiProyectosUrl}/${this.proyectoId}`),
-      etiquetas: this.http.get<Etiqueta[]>(this.apiEtiquetasUrl),
-      usuarios: this.http.get<any[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}/detalles`),
-      tareas: this.http.get<any[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`)
-    }).subscribe({
-      next: (data) => {
-        // Proyecto
-        this.proyecto = data.proyecto;
+    // Primero cargar el proyecto
+    this.http.get<Proyecto>(`${this.apiProyectosUrl}/${this.proyectoId}`).subscribe({
+      next: (proyecto) => {
+        this.proyecto = proyecto;
         console.log('Proyecto cargado:', this.proyecto);
 
-        // Etiquetas
-        this.etiquetas = data.etiquetas ?? [];
-        console.log('Etiquetas cargadas:', this.etiquetas);
+        // Luego cargar el resto de datos en paralelo
+        forkJoin({
+          etiquetas: this.http.get<Etiqueta[]>(this.apiEtiquetasUrl),
+          usuarios: this.http.get<any[]>(`${this.apiUsuariosProyectoUrl}/proyecto/${this.proyectoId}/detalles`),
+          tareas: this.http.get<any[]>(`${this.apiTareasUrl}/proyecto/${this.proyectoId}`)
+        }).subscribe({
+          next: (data) => {
+            // Etiquetas
+            this.etiquetas = data.etiquetas ?? [];
+            console.log('Etiquetas cargadas:', this.etiquetas);
 
-        // Usuarios con rol
-        this.usuariosProyecto = (data.usuarios ?? []).map(up => ({
-          id: up.id_usuario,
-          nombre: up.nombre_usuario,
-          email: up.email_usuario,
-          rol: up.rol
-        }));
-        console.log('Usuarios del proyecto:', this.usuariosProyecto);
+            // Usuarios con rol
+            this.usuariosProyecto = (data.usuarios ?? []).map(up => ({
+              id: up.id_usuario,
+              nombre: up.nombre_usuario,
+              email: up.email_usuario,
+              rol: up.rol
+            }));
+            console.log('Usuarios del proyecto:', this.usuariosProyecto);
 
-        // Tareas enriquecidas con nombres
-        this.tareas = (data.tareas ?? []).map(tarea => ({
-          id: tarea.id,
-          titulo: tarea.titulo,
-          descripcion: tarea.descripcion,
-          prioridad: tarea.prioridad,
-          estado: tarea.estado,
-          id_proyecto: tarea.id_proyecto,
-          id_etiqueta: tarea.id_etiqueta,
-          id_usuario: tarea.id_usuario,
-          nombreEtiqueta: this.obtenerNombreEtiqueta(tarea.id_etiqueta),
-          nombreUsuario: this.obtenerNombreUsuario(tarea.id_usuario)
-        }));
-        console.log('Tareas procesadas:', this.tareas);
+            // Tareas enriquecidas con nombres
+            this.tareas = (data.tareas ?? []).map(tarea => ({
+              id: tarea.id,
+              titulo: tarea.titulo,
+              descripcion: tarea.descripcion,
+              prioridad: tarea.prioridad,
+              estado: tarea.estado,
+              id_proyecto: tarea.id_proyecto,
+              id_etiqueta: tarea.id_etiqueta,
+              id_usuario: tarea.id_usuario,
+              nombreEtiqueta: this.obtenerNombreEtiqueta(tarea.id_etiqueta),
+              nombreUsuario: this.obtenerNombreUsuario(tarea.id_usuario)
+            }));
+            console.log('Tareas procesadas:', this.tareas);
 
-        this.cargando = false;
+            this.cargando = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar datos complementarios:', err);
+            // Aunque falle, mostramos el proyecto
+            this.etiquetas = [];
+            this.usuariosProyecto = [];
+            this.tareas = [];
+            this.cargando = false;
+          }
+        });
       },
       error: (err) => {
-        console.error('Error al cargar datos del proyecto:', err);
+        console.error('Error al cargar proyecto:', err);
         this.cargando = false;
-        alert('Error al cargar el proyecto');
+        alert('Error al cargar el proyecto. Puede que no exista o no tengas permisos.');
         this.volver();
       }
     });

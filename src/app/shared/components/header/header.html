@@ -6,14 +6,23 @@
             <a routerLink="/contacto">Contacto</a>
             <a routerLink="/inicio-sesion">Inicio Sesion</a>
         </ng-container>
+        
         <ng-container *ngIf="auth.isAutenticado$ | async">
-            <a routerLink="/mis-invitaciones" class="btn-invitaciones">
-                📩 Mis Invitaciones
-                <span class="badge-notificacion" *ngIf="cantidadInvitaciones > 0">
-                    {{ cantidadInvitaciones }}
-                </span>
-            </a>
-            <button (click)="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+            <div class="nav-group">
+                <a routerLink="/proyectos" class="btn-proyectos" routerLinkActive="router-link-active">
+                    <span class="text-label">Mis Proyectos</span>
+                </a>
+                <a routerLink="/mis-invitaciones" class="btn-invitaciones" routerLinkActive="router-link-active">
+                    <span class="text-label">Mis Invitaciones</span>
+                    <span class="badge-notificacion" *ngIf="cantidadInvitaciones > 0">
+                        {{ cantidadInvitaciones }}
+                    </span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button (click)="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+            </div>
         </ng-container>
     </nav>
 </header>
