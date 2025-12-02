@@ -8,6 +8,9 @@
         <label for="clave">Contraseña</label>
         <input type="password" id="clave" formControlName="password">
     </div>
+    <div *ngIf="errorMessage" style="color: red;">
+        {{ errorMessage }}
+    </div>
     <button [disabled]="formLogin.invalid">
         Iniciar
     </button>

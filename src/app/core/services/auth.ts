@@ -87,4 +87,11 @@ export class AuthService {
     this.isAuth.next(false);
   }
 
+  get role(): string | null {
+    if (!this.token) return null;
+
+    const decoded: any = jwtDecode(this.token);
+    return decoded.role || null;
+  }
+
 }

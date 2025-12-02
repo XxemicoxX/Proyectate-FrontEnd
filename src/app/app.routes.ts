@@ -12,6 +12,9 @@ import { ListaProyectos } from './features/user/lista-proyectos/lista-proyectos'
 import { GestionTareas } from './features/user/gestion-tareas/gestion-tareas';
 import { GestionUsuarios } from './features/user/gestion-usuarios/gestion-usuarios';
 import { FormProyecto } from './features/user/form-proyecto/form-proyecto';
+import { Dashboard } from './features/admin/dashboard/dashboard';
+import { roleGuard } from './core/guards/role-guard';
+import { NoAutorizado } from './features/public/no-autorizado/no-autorizado';
 
 export const routes: Routes = [
 
@@ -21,6 +24,7 @@ export const routes: Routes = [
     { path: 'inicio-sesion', component: Login, title: 'Iniciar Sesión | Proyectate' },
     { path: 'registro', component: Registro, title: 'Registro | Proyectate' },
     { path: 'crear-proyecto', component: CrearProyecto, title: 'Crear Proyecto | Proyectate' },
+    {path: 'dashboard', component: Dashboard, title: 'Dashboard | Admin', canActivate: [roleGuard], data: { roles: ["ADMIN"] }},
     { path: 'proyectos', children: [
         {path: '', component: ListaProyectos},
         {path: 'crear', component: FormProyecto},
@@ -28,7 +32,8 @@ export const routes: Routes = [
         {path: 'editar/:id', component: FormProyecto},
         {path: ':id/tareas', component: GestionTareas},
         {path: ':id/usuarios', component: GestionUsuarios}
-    ],  canActivate: [authGuard]},
+    ],  canActivate: [roleGuard], data: { roles: ["USER"] }},
     { path: '', redirectTo: '/proyectos', pathMatch: 'full'},
-    { path: '**', component: NoEncontrado, title: 'Página no encontrada' }
+    { path: '**', component: NoEncontrado, title: 'Página no encontrada' },
+    { path: 'no-autorizado', component: NoAutorizado, title: 'Pagina no accesible'}
 ];
